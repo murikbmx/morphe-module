@@ -6,7 +6,9 @@ on:
 
 jobs:
   check:
-    permissions: write-all
+    permissions:
+      contents: read
+      actions: write # delete old workflow runs
     runs-on: ubuntu-latest
     steps:
       - uses: actions/setup-java@v5
@@ -25,7 +27,8 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          if ! git checkout origin/update build.md; then
+          git checkout origin/update -- built-patches.txt 2>/dev/null || :
+          if ! git checkout origin/update -- build.md 2>/dev/null && [ ! -f built-patches.txt ]; then
             echo "first time building!"
             echo "SHOULD_BUILD=1" >> $GITHUB_OUTPUT
           else
@@ -48,7 +51,8 @@ jobs:
       SHOULD_BUILD: ${{ steps.should_build.outputs.SHOULD_BUILD }}
 
   build:
-    permissions: write-all
+    permissions:
+      contents: write
     needs: check
     uses: ./.github/workflows/build.yml
     if: ${{ needs.check.outputs.SHOULD_BUILD == 1 }}
