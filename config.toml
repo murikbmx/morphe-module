@@ -20,4 +20,7 @@ arch = "arm64-v8a"
 version = "auto" # newest YouTube version supported by dual-vot-patches, downloaded exactly from APKMirror
 module-prop-name = "youtube-dualvot"
 included-patches = "'Voice over translation' 'Yandex voice-over translation'"
-apkmirror-dlurl = "https://www.apkmirror.com/apk/google-inc/youtube" # stock YouTube is downloaded from APKMirror
+# stock YouTube source: APKMirror; if it fails, Uptodown, then archive.org
+apkmirror-dlurl = "https://www.apkmirror.com/apk/google-inc/youtube"
+uptodown-dlurl = "https://youtube.en.uptodown.com/android"
+archive-dlurl = "https://archive.org/download/jhc-apks/apks/com.google.android.youtube"

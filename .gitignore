@@ -7,3 +7,8 @@ test*
 build.md
 cmpr
 *-temporary-files
+
+# own signing key (never commit)
+*.bks
+release.keystore
+KEYSTORE_*.txt

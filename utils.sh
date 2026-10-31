@@ -5,7 +5,8 @@ CWD=$(pwd)
 TEMP_DIR="temp"
 BIN_DIR="bin"
 BUILD_DIR="build"
-DL_SRCS=("direct" "archive" "apkmirror")
+# download sources, tried in this order: APKMirror first, then Uptodown and archive.org as fallbacks
+DL_SRCS=("direct" "apkmirror" "uptodown" "archive")
 
 if [ "${GITHUB_TOKEN-}" ]; then GH_HEADER="Authorization: token ${GITHUB_TOKEN}"; else GH_HEADER=; fi
 NEXT_VER_CODE=${NEXT_VER_CODE:-$(date +'%Y%m%d')}
@@ -594,8 +595,10 @@ patch_apk() {
 	local tmp_files
 	tmp_files="$(pwd)/$(mktemp -d -p "$TEMP_DIR")"
 
-	local cmd="java -jar '$cli_jar' patch '$stock_input' -o '$patched_apk' -p '$patches_jar' --keystore=ks.keystore \
---keystore-entry-password=123456789 --keystore-password=123456789 --signer=jhc --keystore-entry-alias=jhc -t '$tmp_files' $patcher_args"
+	# own signing key from env (GitHub secrets), falls back to the public key shipped with the repo
+	local ks_file="${KS_FILE:-ks.keystore}" ks_pass="${KS_PASS:-123456789}" ks_alias="${KS_ALIAS:-jhc}" ks_key_pass="${KS_KEY_PASS:-${KS_PASS:-123456789}}"
+	local cmd="java -jar '$cli_jar' patch '$stock_input' -o '$patched_apk' -p '$patches_jar' --keystore='$ks_file' \
+--keystore-entry-password='$ks_key_pass' --keystore-password='$ks_pass' --signer='$ks_alias' --keystore-entry-alias='$ks_alias' -t '$tmp_files' $patcher_args"
 
 	# TODO: remove this later
 	local cli_name
@@ -605,7 +608,9 @@ patch_apk() {
 		if [ "$OS" = "Android" ]; then cmd+=" --custom-aapt2-binary='${AAPT2}'"; fi
 	fi
 
-	pr "$cmd"
+	local cmd_log=${cmd//"$ks_pass"/***}
+	cmd_log=${cmd_log//"$ks_key_pass"/***}
+	pr "$cmd_log"
 	if eval "$cmd"; then [ -f "$patched_apk" ]; else
 		rm "$patched_apk" 2>/dev/null || :
 		return 1
