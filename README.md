@@ -47,10 +47,17 @@ Two channels in two branches, two separate modules (install only one of them):
 
 Manual run: Actions → **Build Modules** → **Run workflow** → pick the branch (`main` or `dev`).
 
-Stock YouTube is downloaded from APKMirror, patches from dual-vot-patches releases.
+Stock YouTube is downloaded from APKMirror (fallbacks: Uptodown, then archive.org), patches from dual-vot-patches releases.
+Old releases are deleted automatically: the last 10 stable and 5 dev releases are kept.
 Each build creates a GitHub release titled `YouTube <version> · Dual VoT <patches version>`
 with a changelog (YouTube version, patches/CLI versions and the patches release notes).
 Workflow permissions must allow write access (Settings → Actions → General → Workflow permissions).
+
+### Own signing key (non-root APK)
+Without it, APKs are signed with the public key from this repo, so anyone could make an "update" for your APK.
+1. Run `scripts/make-keystore.sh` once (needs Java `keytool`). It creates `~/morphe-module-keystore/release.keystore`.
+2. Add the printed `KEYSTORE_BASE64`, `KEYSTORE_PASSWORD`, `KEYSTORE_ALIAS` as repository secrets.
+3. Back up the keystore. If you lose it, users will have to uninstall the APK to install new builds.
 
 ### Locally (Linux)
 Requires `bash`, `jq`, `zip`, `curl`, `java` 21.

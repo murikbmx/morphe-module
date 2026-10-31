@@ -37,6 +37,25 @@ jobs:
             echo "RELEASE_KIND=--prerelease" >> "$GITHUB_ENV"
           fi
 
+      - name: Set up signing key
+        env:
+          KEYSTORE_BASE64: ${{ secrets.KEYSTORE_BASE64 }}
+          KEYSTORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
+          KEYSTORE_ALIAS: ${{ secrets.KEYSTORE_ALIAS }}
+        run: |
+          if [ -n "$KEYSTORE_BASE64" ] && [ -n "$KEYSTORE_PASSWORD" ] && [ -n "$KEYSTORE_ALIAS" ]; then
+            KS_FILE="$RUNNER_TEMP/release.keystore"
+            base64 -d <<<"$KEYSTORE_BASE64" >"$KS_FILE"
+            {
+              echo "KS_FILE=$KS_FILE"
+              echo "KS_PASS=$KEYSTORE_PASSWORD"
+              echo "KS_ALIAS=$KEYSTORE_ALIAS"
+            } >>"$GITHUB_ENV"
+            echo "Using own signing key '$KEYSTORE_ALIAS'"
+          else
+            echo "::warning::KEYSTORE_BASE64 / KEYSTORE_PASSWORD / KEYSTORE_ALIAS secrets are not set. APKs are signed with the PUBLIC key from the repo. Run scripts/make-keystore.sh and add the secrets."
+          fi
+
       - name: Update config
         if: ${{ inputs.from_ci }}
         run: |
@@ -94,6 +113,22 @@ jobs:
           else
             gh release create "$TAG" ./build/* --title "$TITLE" --notes-file build.tmp "$RELEASE_KIND"
           fi
+
+      - name: Delete old releases
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          KEEP_STABLE: 10 # stable releases to keep
+          KEEP_DEV: 5     # pre-releases (dev) to keep
+        run: |
+          RELS=$(gh release list -L 400 --json tagName,isPrerelease,createdAt)
+          {
+            jq -r 'map(select(.isPrerelease | not)) | sort_by(.createdAt) | reverse | .[env.KEEP_STABLE | tonumber:][] | .tagName' <<<"$RELS"
+            jq -r 'map(select(.isPrerelease)) | sort_by(.createdAt) | reverse | .[env.KEEP_DEV | tonumber:][] | .tagName' <<<"$RELS"
+          } | while read -r OLD; do
+            [ -z "$OLD" ] && continue
+            echo "Deleting old release $OLD"
+            gh release delete "$OLD" --yes --cleanup-tag || :
+          done
 
       - name: Update modules changelog and update json
         id: update_config
