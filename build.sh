@@ -120,6 +120,13 @@ for table_name in $(toml_get_table_names); do
 			app_args[${dl_from}_dlurl]=""
 		fi
 	done
+	# APKMirror answers 403 to GitHub runners and Uptodown needs a captcha: don't even try them on GitHub
+	# (they still work for local builds). Set MIRRORS_ON_CI=true to try them anyway.
+	app_args[apkmirror_hint]=${app_args[apkmirror_dlurl]}
+	if [ "${GITHUB_ACTIONS-}" = true ] && [ "${MIRRORS_ON_CI-}" != true ]; then
+		app_args[apkmirror_dlurl]=""
+		app_args[uptodown_dlurl]=""
+	fi
 	# own storage of stock apks (the 'stock-apks' release), only when building on GitHub or with STOCK_REPO set
 	if [ -n "${STOCK_REPO:-${GITHUB_REPOSITORY-}}" ]; then
 		app_args[stock_dlurl]="https://api.github.com/repos/${STOCK_REPO:-${GITHUB_REPOSITORY}}/releases/tags/${STOCK_TAG}"
