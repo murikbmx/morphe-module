@@ -15,7 +15,7 @@ cli-version = "latest"
 [YouTube]
 app-name = "YouTube"
 rv-brand = "DualVoT"
-build-mode = "module" # 'module', 'apk' or 'both'
+build-mode = "both" # module for root (KernelSU/Magisk) + non-root APK (needs MicroG-RE)
 arch = "arm64-v8a"
 version = "auto" # newest YouTube version supported by dual-vot-patches, downloaded exactly from APKMirror
 module-prop-name = "youtube-dualvot"

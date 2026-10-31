@@ -2,7 +2,7 @@
 
 [![CI](https://github.com/murikbmx/morphe-module/actions/workflows/ci.yml/badge.svg?event=schedule)](https://github.com/murikbmx/morphe-module/actions/workflows/ci.yml)
 
-Magisk / KernelSU / APatch module for **YouTube (arm64-v8a)** patched with
+Magisk / KernelSU / APatch module and non-root APK for **YouTube (arm64-v8a)** patched with
 [**dual-vot-patches**](https://github.com/sashade8-ship-it/dual-vot-patches): Morphe patches
 plus Google/other and Yandex voice-over translation in one bundle.
 
@@ -19,6 +19,9 @@ Get the [latest release](../../releases).
   - recompiles odex (`speed-profile`) after install
   - action button in the root manager to enable/disable mounting
 
+Non-root APK: install [MicroG-RE](https://github.com/MorpheApp/MicroG-RE/releases) first, then the `youtube-dualvot-v*.apk` from the release.
+It installs next to the original YouTube (different package name), no root needed.
+
 Use [zygisk-detach](https://github.com/j-hc/zygisk-detach) to detach YouTube from the Play Store.
 If you see "Reflash needed" after reboots, try [rvmm-zygisk-mount](https://github.com/j-hc/rvmm-zygisk-mount).
 
@@ -26,7 +29,7 @@ If you see "Reflash needed" after reboots, try [rvmm-zygisk-mount](https://githu
 Everything is in [`config.toml`](./config.toml). See [`CONFIG.md`](./CONFIG.md) for all options.
 
 - `patches-version = "dev"` to build from dual-vot pre-releases
-- `build-mode = "both"` to also get a non-root APK (needs [MicroG-RE](https://github.com/MorpheApp/MicroG-RE/))
+- `build-mode = "module"` or `"apk"` to build only one of them (default `both`)
 - `excluded-patches` / `included-patches` / `patcher-args` to tune patches
 
 ## Building
