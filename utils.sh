@@ -170,10 +170,45 @@ get_prebuilts() {
 				) >&2
 				rm -r "${file}-zip" || :
 			fi
+			# change default values of Morphe settings (only once, right after the download)
+			if [ "$grab_cl" = "true" ] && [ -n "${SETTINGS_DEFAULTS-}" ]; then
+				apply_settings_defaults "$file" "$cl_dir" || return 1
+			fi
 		fi
 		echo -n "$file "
 	done
 	echo
+}
+
+# SETTINGS_DEFAULTS: whitespace separated key=value list, e.g. "morphe_shorts_autoplay=true morphe_header_logo=PREMIUM"
+apply_settings_defaults() {
+	local file=$1 cl_dir=$2
+	local ext=extensions/youtube.mpe
+	if ! unzip -l "$file" "$ext" >/dev/null 2>&1; then
+		epr "settings-defaults: '$ext' not found in '$file'"
+		return 1
+	fi
+	local work op
+	work=$(mktemp -d -p "$TEMP_DIR")
+	# shellcheck disable=SC2086
+	if ! unzip -qo "$file" "$ext" -d "$work" ||
+		! op=$(java -cp "${BIN_DIR}/dexlib2.jar" tools/SettingsDefaults.java "$work/$ext" "$work/$ext.new" $SETTINGS_DEFAULTS 2>&1); then
+		epr "settings-defaults failed: $op"
+		rm -rf "$work"
+		return 1
+	fi
+	mv -f "$work/$ext.new" "$work/$ext"
+	(cd "$work" && zip -0q "${CWD}/${file}" "$ext") || {
+		rm -rf "$work"
+		return 1
+	}
+	rm -rf "$work"
+	pr "Default settings changed: $(tr '\n' ',' <<<"$op" | sed 's/,$//')" >&2
+	{
+		echo "Default Morphe settings in this build:  "
+		sed 's/^\(.*\) -> \(.*\) (.*)$/- \1 = \2  /' <<<"$op"
+		echo ""
+	} >>"${cl_dir}/changelog.md"
 }
 
 set_prebuilts() {

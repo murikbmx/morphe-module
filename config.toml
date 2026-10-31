@@ -8,6 +8,19 @@ patches-version = "latest" # 'latest' (stable), 'dev' (newest release incl. pre-
 cli-source = "MorpheApp/morphe-cli"
 cli-version = "latest"
 
+# Default values of Morphe settings baked into the APK and the module (users can still change them in Morphe settings).
+# key=value, separated by spaces/new lines. The build fails if a key is not found in the patches.
+#   morphe_header_logo                 Header logo: DEFAULT, REGULAR, PREMIUM, MORPHE
+#   morphe_shorts_autoplay             Autoplay Shorts: true / false
+#   morphe_video_quality_default_wifi  Default video quality on Wi-Fi: -2 (auto), 2160, 1440, 1080, 720, 480, 360, 240, 144
+#   morphe_shorts_quality_default_wifi Default Shorts quality on Wi-Fi: -2 (auto), 2160, 1440, 1080, 720, 480, 360, 240
+settings-defaults = """
+  morphe_header_logo=PREMIUM
+  morphe_shorts_autoplay=true
+  morphe_video_quality_default_wifi=1080
+  morphe_shorts_quality_default_wifi=1080
+  """
+
 # see CONFIG.md for more detailed explanations
 
 # Dev channel ("dev" branch): newest dual-vot-patches release, including pre-releases. Manual builds only.
