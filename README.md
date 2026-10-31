@@ -11,6 +11,8 @@ Get the [latest release](../../releases).
 ## Features
 - Morphe patches + `Voice over translation` + `Yandex voice-over translation`
 - Picks the newest YouTube version supported by the patches (`version = "auto"`)
+- Morphe settings with custom defaults (`settings-defaults` in `config.toml`), can still be changed in the app:
+  header logo **Premium**, **Shorts autoplay** on, default video and Shorts quality on Wi-Fi **1080p**
 - Daily CI: rebuilds automatically when a new dual-vot-patches release appears
 - Module updates through the Magisk/KernelSU manager (`updateJson`)
 - Module:
