@@ -1,0 +1,15 @@
+# Weekly check for new versions of the GitHub Actions used in .github/workflows.
+# Dependabot opens a pull request; nothing changes until it is merged.
+version: 2
+updates:
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+    # one pull request with all action updates instead of one per action
+    groups:
+      github-actions:
+        patterns:
+          - "*"
+    commit-message:
+      prefix: "ci"
