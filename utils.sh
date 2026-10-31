@@ -799,7 +799,7 @@ build_rv() {
 		if [ ! -f "$stock_apk" ]; then
 			epr "Stock apk ${version} not found in any source (${DL_SRCS[*]}): $stock_apk"
 			local hint_url="https://www.apkmirror.com"
-			if [ -n "${args[apkmirror_dlurl]}" ]; then hint_url=${args[apkmirror_dlurl]}; fi
+			if [ -n "${args[apkmirror_hint]-}" ]; then hint_url=${args[apkmirror_hint]}; fi
 			epr "Fix: download ${pkg_name} ${version} (${arch}) yourself, e.g. from ${hint_url}, and upload it to the '${STOCK_TAG}' release of this repo as '${pkg_name}-${version_f}-${arch_f}.apk' ('.apkm' for split bundles), then run the build again"
 			log "Skipped ${table}: stock ${pkg_name} ${version} (${arch}) was not found. Upload it to the '${STOCK_TAG}' release as '${pkg_name}-${version_f}-${arch_f}.apk' (or '.apkm')"
 			return 0

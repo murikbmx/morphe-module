@@ -9,12 +9,14 @@ cli-source = "MorpheApp/morphe-cli"
 cli-version = "latest"
 
 # see CONFIG.md for more detailed explanations
-# stock apk sources are tried in this order: archive.org, APKMirror (blocked on GitHub, works on a home PC), Uptodown
+# stock apk sources, in this order: own storage (stock-apks release), archive.org, APKMirror, Uptodown.
+# APKMirror and Uptodown are skipped on GitHub (blocked there / captcha), they are used only for local builds
 
 # Dev channel ("dev" branch): newest dual-vot-patches release, including pre-releases. Manual builds only.
 # the stable channel (and Google Photos) lives in the default branch
 [YouTube]
 app-name = "YouTube"
+pkg-name = "com.google.android.youtube"
 rv-brand = "DualVoT Dev"
 patches-version = "dev"
 build-mode = "both" # module for root (KernelSU/Magisk) + non-root APK (needs MicroG-RE)
