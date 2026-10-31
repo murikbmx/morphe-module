@@ -5,9 +5,13 @@ CWD=$(pwd)
 TEMP_DIR="temp"
 BIN_DIR="bin"
 BUILD_DIR="build"
-# download sources, tried in this order. archive.org first: APKMirror blocks GitHub runners (403),
-# but works from home PCs. Uptodown downloads need a captcha now, it is kept only as a last resort.
-DL_SRCS=("direct" "archive" "apkmirror" "uptodown")
+# download sources, tried in this order:
+#   stock     - own storage: the 'stock-apks' release of this repo (filled automatically by CI, or by hand)
+#   archive   - archive.org mirror
+#   apkmirror - blocks GitHub runners (403), but works from home PCs
+#   uptodown  - downloads need a captcha now, kept only as a last resort
+DL_SRCS=("direct" "stock" "archive" "apkmirror" "uptodown")
+STOCK_TAG="stock-apks"
 
 if [ "${GITHUB_TOKEN-}" ]; then GH_HEADER="Authorization: token ${GITHUB_TOKEN}"; else GH_HEADER=; fi
 NEXT_VER_CODE=${NEXT_VER_CODE:-$(date +'%Y%m%d')}
@@ -579,6 +583,31 @@ dl_uptodown() {
 }
 get_uptodown_pkg_name() { $HTMLQ --text "tr.full:nth-child(1) > td:nth-child(3)" <<<"$__UPTODOWN_RESP_PKG__"; }
 
+# -------------------- stock (own storage) --------------------
+# assets of the '${STOCK_TAG}' release: <package>-<version>-<arch>.apk / .apkm, arch: arm64-v8a, arm-v7a, x86, x86_64 or all
+get_stock_resp() { __STOCK_RESP__=$(gh_req "$1" -) || return 1; }
+get_stock_pkg_name() { return 1; }
+get_stock_vers() {
+	jq -r --arg p "${pkg_name}-" '.assets[].name | select(startswith($p)) | ltrimstr($p)' <<<"$__STOCK_RESP__" |
+		sed 's/-\(all\|arm64-v8a\|arm-v7a\|x86\|x86_64\)\.\(apk\|apkm\)$//'
+}
+dl_stock() {
+	local _url=$1 _version=$2 output=$3 arch=$4
+	local name asset=""
+	for name in "${pkg_name}-${version_f}-${arch// /}.apkm" "${pkg_name}-${version_f}-${arch// /}.apk" \
+		"${pkg_name}-${version_f}-all.apkm" "${pkg_name}-${version_f}-all.apk"; do
+		asset=$(jq -r --arg n "$name" '.assets[] | select(.name == $n) | .url' <<<"$__STOCK_RESP__")
+		if [ -n "$asset" ]; then break; fi
+	done
+	if [ -z "$asset" ]; then return 1; fi
+	if [ "${name##*.}" = apkm ]; then
+		gh_dl "${output}.apkm" "$asset" || return 1
+		merge_splits "${output}.apkm" "$output"
+	else
+		gh_dl "$output" "$asset"
+	fi
+}
+
 # -------------------- archive --------------------
 dl_archive() {
 	local url=$1 version=$2 output=$3 arch=$4
@@ -687,7 +716,7 @@ build_rv() {
 		pkg_name="${args[pkg_name]}"
 	else
 		for dl_p in "${DL_SRCS[@]}"; do
-			if [ -z "${args[${dl_p}_dlurl]}" ]; then continue; fi
+			if [ -z "${args[${dl_p}_dlurl]}" ] || [ "$dl_p" = stock ]; then continue; fi
 			if ! get_"${dl_p}"_resp "${args[${dl_p}_dlurl]}" || ! pkg_name=$(get_"${dl_p}"_pkg_name); then
 				args[${dl_p}_dlurl]=""
 				wpr "Could not find ${table} in ${dl_p}, trying the next source"
@@ -749,7 +778,7 @@ build_rv() {
 	pr "Choosing version '${version}' for ${table}"
 	local version_f=${version// /}
 	version_f=${version_f#v}
-	local stock_apk="${TEMP_DIR}/${pkg_name}-${version_f}-${arch_f}.apk"
+	local stock_apk="${TEMP_DIR}/${pkg_name}-${version_f}-${arch_f}.apk" stock_from=""
 	if [ ! -f "$stock_apk" ]; then
 		for dl_p in "${DL_SRCS[@]}"; do
 			if [ -z "${args[${dl_p}_dlurl]}" ]; then continue; fi
@@ -764,10 +793,15 @@ build_rv() {
 				wpr "Could not download '${table}' from '${dl_p}', trying the next source. version '${version}', arch '${arch}', dpi '${args[dpi]}'"
 				continue
 			fi
+			stock_from=$dl_p
 			break
 		done
 		if [ ! -f "$stock_apk" ]; then
 			epr "Stock apk ${version} not found in any source (${DL_SRCS[*]}): $stock_apk"
+			local hint_url="https://www.apkmirror.com"
+			if [ -n "${args[apkmirror_dlurl]}" ]; then hint_url=${args[apkmirror_dlurl]}; fi
+			epr "Fix: download ${pkg_name} ${version} (${arch}) yourself, e.g. from ${hint_url}, and upload it to the '${STOCK_TAG}' release of this repo as '${pkg_name}-${version_f}-${arch_f}.apk' ('.apkm' for split bundles), then run the build again"
+			log "Skipped ${table}: stock ${pkg_name} ${version} (${arch}) was not found. Upload it to the '${STOCK_TAG}' release as '${pkg_name}-${version_f}-${arch_f}.apk' (or '.apkm')"
 			return 0
 		fi
 	fi
@@ -786,6 +820,14 @@ build_rv() {
 		if ! sig_op=$(check_sig "$stock_apk" "$pkg_name" 2>&1); then
 			epr "Not building $table, apk signature mismatch '$stock_apk': $sig_op"
 			return 0
+		fi
+	fi
+	# keep what was downloaded from a mirror in the own storage (uploaded by the workflow after the build)
+	if [ -n "$stock_from" ] && [ "$stock_from" != stock ] && [ -n "${GITHUB_REPOSITORY-}" ]; then
+		if [ -f "${stock_apk}.apkm" ]; then
+			echo "${stock_apk}.apkm|${pkg_name}-${version_f}-${arch_f}.apkm" >>"${TEMP_DIR}/stock-upload.list"
+		else
+			echo "${stock_apk}|${pkg_name}-${version_f}-${arch_f}.apk" >>"${TEMP_DIR}/stock-upload.list"
 		fi
 	fi
 	log "${table}: ${version}"

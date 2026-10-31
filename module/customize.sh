@@ -1,5 +1,6 @@
 #!/system/bin/sh
-export MODULE_HOT_INSTALL_REQUEST="true"
+# no MODULE_HOT_INSTALL_REQUEST: with the mountify metamodule a hot install leaves only module.prop
+# in the module folder after an update. The apk is mounted right away anyway, files are moved on reboot.
 MODDIR="$MODPATH" . "$MODPATH/utils.sh"
 
 ui_print ""
@@ -198,6 +199,7 @@ fi
 rm -rf "${MODPATH:?}/bin" "$MODPATH/stock/"
 cp -f "$MODPATH/module.prop" "$MODPATH/module.prop.orig"
 
-ui_print "* Done. No need to reboot."
+ui_print "* Done. The patched app works right away."
+ui_print "  Reboot later so the root manager finishes installing the module."
 ui_print "  by murikbmx, based on rvmm by j-hc"
 ui_print " "
