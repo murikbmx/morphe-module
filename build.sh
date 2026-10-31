@@ -156,7 +156,17 @@ wait
 _clean_tmp
 if [ -z "$(ls -A1 "${BUILD_DIR}")" ]; then abort "All builds failed."; fi
 
-log "\nInstall [MicroG-RE](https://github.com/MorpheApp/MicroG-RE/) if you use the non-root YouTube APK"
+if [ -n "$(find "$BUILD_DIR" -maxdepth 1 -name '*.apk')" ]; then
+	# link the current MicroG-RE release for non-root APK users
+	MICROG_URL="https://github.com/MorpheApp/MicroG-RE/releases/latest" MICROG_TAG="" MICROG_APK=""
+	if MICROG_RESP=$(gh_req "https://api.github.com/repos/MorpheApp/MicroG-RE/releases/latest" -); then
+		MICROG_TAG=$(jq -r '.tag_name // ""' <<<"$MICROG_RESP")
+		MICROG_URL=$(jq -r ".html_url // \"$MICROG_URL\"" <<<"$MICROG_RESP")
+		MICROG_APK=$(jq -r '[.assets[] | select(.name | test("-icon-arm64-v8a\\.apk$"))][0].browser_download_url // ""' <<<"$MICROG_RESP")
+	fi
+	log "\nNon-root APK requires [MicroG-RE${MICROG_TAG:+ $MICROG_TAG}](${MICROG_URL})"
+	if [ -n "$MICROG_APK" ]; then log "MicroG-RE for arm64-v8a: [$(basename "$MICROG_APK")](${MICROG_APK})"; fi
+fi
 log "Use [zygisk-detach](https://github.com/j-hc/zygisk-detach) to detach the YouTube module from Play Store"
 log "\nPatches: [dual-vot-patches](https://github.com/sashade8-ship-it/dual-vot-patches)"
 log "Builder: [morphe-module](https://github.com/${GITHUB_REPOSITORY:-murikbmx/morphe-module}), based on [revanced-magisk-module](https://github.com/j-hc/revanced-magisk-module)\n"
