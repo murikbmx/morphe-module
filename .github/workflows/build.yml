@@ -9,10 +9,23 @@ on:
 
   workflow_dispatch:
 
+# one build at a time: release numbers are shared by all branches
+concurrency:
+  group: morphe-build
+  cancel-in-progress: false
+
 jobs:
-  run:
-    permissions: write-all
+  # 1) Patching. Third-party patch bundles run here, so this job gets a READ-ONLY token
+  #    and no signing key: APKs are signed with the throwaway public key from the repo.
+  build:
+    permissions:
+      contents: read
     runs-on: ubuntu-latest
+    outputs:
+      update_branch: ${{ steps.channel.outputs.update_branch }}
+      release_kind: ${{ steps.channel.outputs.release_kind }}
+      next_ver_code: ${{ steps.next_ver_code.outputs.NEXT_VER_CODE }}
+      built: ${{ steps.build.outputs.built }}
     steps:
       - uses: actions/setup-java@v5
         with:
@@ -28,38 +41,23 @@ jobs:
       # default branch -> stable channel: updates in the 'update' branch, releases marked as latest
       # any other branch (e.g. 'dev') -> its own 'update-<branch>' branch, releases marked as pre-release
       - name: Detect channel
+        id: channel
         run: |
           if [ "$GITHUB_REF_NAME" = "${{ github.event.repository.default_branch }}" ]; then
-            echo "UPDATE_BRANCH=update" >> "$GITHUB_ENV"
-            echo "RELEASE_KIND=--latest" >> "$GITHUB_ENV"
+            echo "update_branch=update" >> "$GITHUB_OUTPUT"
+            echo "release_kind=--latest" >> "$GITHUB_OUTPUT"
           else
-            echo "UPDATE_BRANCH=update-${GITHUB_REF_NAME//\//-}" >> "$GITHUB_ENV"
-            echo "RELEASE_KIND=--prerelease" >> "$GITHUB_ENV"
-          fi
-
-      - name: Set up signing key
-        env:
-          KEYSTORE_BASE64: ${{ secrets.KEYSTORE_BASE64 }}
-          KEYSTORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
-          KEYSTORE_ALIAS: ${{ secrets.KEYSTORE_ALIAS }}
-        run: |
-          if [ -n "$KEYSTORE_BASE64" ] && [ -n "$KEYSTORE_PASSWORD" ] && [ -n "$KEYSTORE_ALIAS" ]; then
-            KS_FILE="$RUNNER_TEMP/release.keystore"
-            base64 -d <<<"$KEYSTORE_BASE64" >"$KS_FILE"
-            {
-              echo "KS_FILE=$KS_FILE"
-              echo "KS_PASS=$KEYSTORE_PASSWORD"
-              echo "KS_ALIAS=$KEYSTORE_ALIAS"
-            } >>"$GITHUB_ENV"
-            echo "Using own signing key '$KEYSTORE_ALIAS'"
-          else
-            echo "::warning::KEYSTORE_BASE64 / KEYSTORE_PASSWORD / KEYSTORE_ALIAS secrets are not set. APKs are signed with the PUBLIC key from the repo. Run scripts/make-keystore.sh and add the secrets."
+            echo "update_branch=update-${GITHUB_REF_NAME//\//-}" >> "$GITHUB_OUTPUT"
+            echo "release_kind=--prerelease" >> "$GITHUB_OUTPUT"
           fi
 
       - name: Update config
         if: ${{ inputs.from_ci }}
+        env:
+          UPDATE_BRANCH: ${{ steps.channel.outputs.update_branch }}
         run: |
-          if git checkout "origin/$UPDATE_BRANCH" build.md; then
+          git checkout "origin/$UPDATE_BRANCH" -- built-patches.txt 2>/dev/null || :
+          if git checkout "origin/$UPDATE_BRANCH" -- build.md 2>/dev/null || [ -f built-patches.txt ]; then
             UPDATE_CFG=$(./build.sh config.toml --config-update)
             if [ "$UPDATE_CFG" ]; then
               echo "'$UPDATE_CFG'"
@@ -78,29 +76,113 @@ jobs:
           echo "NEXT_VER_CODE=$((TAG + 1))" >> $GITHUB_OUTPUT
 
       - name: Build modules/APKs
-        run: if [ -f "config.json" ]; then ./build.sh config.json; else ./build.sh config.toml; fi
+        id: build
+        run: |
+          if [ -f "config.json" ]; then ./build.sh config.json; else ./build.sh config.toml; fi
+          ./build.sh config.toml --list-prefixes > prefixes.txt
+          echo "built=true" >> "$GITHUB_OUTPUT"
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           GITHUB_REPOSITORY: ${{ github.repository }}
           NEXT_VER_CODE: ${{ steps.next_ver_code.outputs.NEXT_VER_CODE }}
-          UPDATE_BRANCH: ${{ env.UPDATE_BRANCH }}
+          UPDATE_BRANCH: ${{ steps.channel.outputs.update_branch }}
+
+      - name: Collect outputs
+        run: |
+          mkdir -p out/build out/stock
+          cp -a build/. out/build/
+          cp build.md prefixes.txt out/
+          cp temp/built.list out/ 2>/dev/null || : > out/built.list
+          if [ -s temp/stock-upload.list ]; then
+            while IFS='|' read -r SRC NAME; do
+              [ -f "$SRC" ] && cp -f "$SRC" "out/stock/$NAME"
+            done < temp/stock-upload.list
+          fi
+          ls -lhR out
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: build-output
+          path: out
+          retention-days: 1
+          compression-level: 0
+
+  # 2) Publishing. No third-party code runs here: re-sign with the own key, store stock apks,
+  #    carry unchanged apps over, create the release, update module update files and the build state.
+  release:
+    needs: build
+    if: ${{ needs.build.outputs.built == 'true' }}
+    permissions:
+      contents: write
+    runs-on: ubuntu-latest
+    env:
+      UPDATE_BRANCH: ${{ needs.build.outputs.update_branch }}
+      RELEASE_KIND: ${{ needs.build.outputs.release_kind }}
+      TAG: ${{ needs.build.outputs.next_ver_code }}
+      GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    steps:
+      - uses: actions/setup-java@v5
+        with:
+          distribution: "zulu"
+          java-version: "21"
+
+      - name: Checkout
+        uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+
+      - uses: actions/download-artifact@v4
+        with:
+          name: build-output
+          path: out
+
+      - name: Re-sign APKs with the own key
+        env:
+          KEYSTORE_BASE64: ${{ secrets.KEYSTORE_BASE64 }}
+          KEYSTORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
+          KEYSTORE_ALIAS: ${{ secrets.KEYSTORE_ALIAS }}
+          BC_URL: https://repo1.maven.org/maven2/org/bouncycastle/bcprov-jdk18on/1.78.1/bcprov-jdk18on-1.78.1.jar
+          BC_SHA256: add5915e6acfc6ab5836e1fd8a5e21c6488536a8c1f21f386eeb3bf280b702d7
+        run: |
+          shopt -s nullglob
+          APKS=(out/build/*.apk)
+          if [ ${#APKS[@]} -eq 0 ]; then echo "no apks"; exit 0; fi
+          if [ -z "$KEYSTORE_BASE64" ] || [ -z "$KEYSTORE_PASSWORD" ] || [ -z "$KEYSTORE_ALIAS" ]; then
+            echo "::warning::KEYSTORE_BASE64 / KEYSTORE_PASSWORD / KEYSTORE_ALIAS secrets are not set. APKs stay signed with the PUBLIC key from the repo. Run scripts/make-keystore.sh and add the secrets."
+            exit 0
+          fi
+          K="$RUNNER_TEMP/keys"; mkdir -p "$K"
+          base64 -d <<<"$KEYSTORE_BASE64" >"$K/release.bks"
+          curl -fsSL -o "$K/bcprov.jar" "$BC_URL"
+          echo "$BC_SHA256  $K/bcprov.jar" | sha256sum -c -
+          export KS_PASS="$KEYSTORE_PASSWORD"
+          # BKS (as Morphe CLI wants it) -> PKCS12 for apksigner
+          keytool -importkeystore -noprompt -srckeystore "$K/release.bks" -srcstoretype BKS \
+            -srcstorepass:env KS_PASS -srckeypass:env KS_PASS -srcalias "$KEYSTORE_ALIAS" \
+            -destkeystore "$K/release.p12" -deststoretype PKCS12 \
+            -deststorepass:env KS_PASS -destkeypass:env KS_PASS -destalias "$KEYSTORE_ALIAS" \
+            -providerpath "$K/bcprov.jar" -provider org.bouncycastle.jce.provider.BouncyCastleProvider
+          for A in "${APKS[@]}"; do
+            java -jar bin/apksigner.jar sign --ks "$K/release.p12" --ks-type PKCS12 --ks-key-alias "$KEYSTORE_ALIAS" \
+              --ks-pass env:KS_PASS --key-pass env:KS_PASS --out "$A.signed" "$A"
+            mv -f "$A.signed" "$A"
+            rm -f "$A.signed.idsig" "$A.idsig"
+            java -jar bin/apksigner.jar verify --print-certs "$A" | grep -m1 'SHA-256'
+          done
+          rm -rf "$K"
 
       - name: Save stock APKs to the storage
         env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           KEEP_VERSIONS: 3 # stock versions to keep per app
         run: |
-          if [ ! -s temp/stock-upload.list ]; then echo "nothing new to store"; exit 0; fi
+          shopt -s nullglob
+          FILES=(out/stock/*)
+          if [ ${#FILES[@]} -eq 0 ]; then echo "nothing new to store"; exit 0; fi
           if ! gh release view stock-apks >/dev/null 2>&1; then
             gh release create stock-apks --title "Stock APKs (storage)" --prerelease --latest=false \
               --notes "Original APKs used for the builds. Filled automatically; you can also upload files by hand: <package>-<version>-<arch>.apk (or .apkm for split bundles), e.g. com.google.android.youtube-21.30.216-arm64-v8a.apk"
           fi
-          mkdir -p stock-upload
-          while IFS='|' read -r SRC NAME; do
-            [ -f "$SRC" ] && cp -f "$SRC" "stock-upload/$NAME"
-          done < temp/stock-upload.list
-          ls -lh stock-upload
-          gh release upload stock-apks stock-upload/* --clobber
+          gh release upload stock-apks "${FILES[@]}" --clobber
 
           # keep only the newest KEEP_VERSIONS versions of every package
           gh release view stock-apks --json assets -q '.assets[].name' | while read -r N; do
@@ -111,40 +193,60 @@ jobs:
               gh release delete-asset stock-apks "$OLD" --yes || :
             done
 
-      - name: Get output
-        id: get_output
+      # every release has every app: files of apps that were not rebuilt now are copied from the previous
+      # release of the same channel, so module updates and Obtainium always find them in the newest release
+      - name: Carry over unchanged apps
         run: |
-          DELIM="$(openssl rand -hex 8)"
-          echo "BUILD_LOG<<${DELIM}" >> "$GITHUB_OUTPUT"
-          cat build.md >> "$GITHUB_OUTPUT"
-          echo "${DELIM}" >> "$GITHUB_OUTPUT"
-          cp -f build.md build.tmp
+          shopt -s nullglob
+          key() { sed -E 's/-v[0-9].*$//' <<<"$1"; }
+          if [ "$RELEASE_KIND" = --prerelease ]; then SEL='select(.isPrerelease)'; else SEL='select(.isPrerelease | not)'; fi
+          PREV=$(gh release list -L 400 --json tagName,isPrerelease,createdAt |
+            jq -r "map($SEL | select(.tagName | test(\"^[0-9]+\$\"))) | sort_by(.createdAt) | reverse | .[0].tagName // empty")
+          if [ -z "$PREV" ]; then echo "no previous release"; exit 0; fi
+          declare -A HAVE=()
+          for F in out/build/*; do HAVE[$(key "${F##*/}")]=1; done
+          CARRIED=()
+          for N in $(gh release view "$PREV" --json assets -q '.assets[].name'); do
+            K=$(key "$N"); BASE=${K%-module}
+            if [ -n "${HAVE[$K]-}" ] || ! grep -qxF "$BASE" out/prefixes.txt; then continue; fi
+            gh release download "$PREV" -p "$N" -D out/build --clobber
+            CARRIED+=("$N")
+            HAVE[$K]=1
+          done
+          if [ ${#CARRIED[@]} -gt 0 ]; then
+            {
+              echo ""
+              echo "Без изменений, перенесено из релиза ${PREV}:  "
+              for N in "${CARRIED[@]}"; do echo "- ${N}  "; done
+            } >>out/build.md
+          fi
+          ls -lh out/build
 
+      - name: Release title
+        id: title
+        run: |
           # "App: version" lines of the build log, e.g. "YouTube 21.30.216 · GooglePhotos 7.92.0.977185651"
-          APPS=$(sed -n 's/^\([A-Za-z][A-Za-z0-9 ()-]*\): \([0-9][^ ]*\)  *$/\1 \2/p' build.md | sed 's/GooglePhotos/Google Photos/' | paste -sd '|' - | sed 's/|/ · /g')
-          VOT_VER=$(sed -n 's|^Patches: sashade8-ship-it/dual-vot-patches/patches-\(.*\)\.[^.]*  *$|\1|p' build.md | head -1)
+          APPS=$(sed -n 's/^\([A-Za-z][A-Za-z0-9 ()-]*\): \([0-9][^ ]*\)  *$/\1 \2/p' out/build.md | sed 's/GooglePhotos/Google Photos/' | paste -sd '|' - | sed 's/|/ · /g')
+          VOT_VER=$(sed -n 's|^Patches: sashade8-ship-it/dual-vot-patches/patches-\(.*\)\.[^.]*  *$|\1|p' out/build.md | head -1)
           TITLE="${APPS:-Release}"
           if [ -n "$VOT_VER" ]; then TITLE+=" · Dual VoT ${VOT_VER}"; fi
+          if [ "$RELEASE_KIND" = --prerelease ]; then TITLE+=" (dev)"; fi
           echo "RELEASE_TITLE=${TITLE}" >> "$GITHUB_OUTPUT"
 
       - name: Upload release
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          TAG: ${{ steps.next_ver_code.outputs.NEXT_VER_CODE }}
-          TITLE: ${{ steps.get_output.outputs.RELEASE_TITLE }}
+          TITLE: ${{ steps.title.outputs.RELEASE_TITLE }}
         run: |
-          ls -lh ./build/*
-          if [ "$RELEASE_KIND" = --prerelease ]; then TITLE+=" (dev)"; fi
+          ls -lh out/build/*
           if gh release view "$TAG" >/dev/null 2>&1; then
-            gh release edit "$TAG" --title "$TITLE" --notes-file build.tmp
-            gh release upload "$TAG" ./build/* --clobber
+            gh release edit "$TAG" --title "$TITLE" --notes-file out/build.md
+            gh release upload "$TAG" out/build/* --clobber
           else
-            gh release create "$TAG" ./build/* --title "$TITLE" --notes-file build.tmp "$RELEASE_KIND"
+            gh release create "$TAG" out/build/* --title "$TITLE" --notes-file out/build.md "$RELEASE_KIND"
           fi
 
       - name: Delete old releases
         env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           KEEP_STABLE: 10 # stable releases to keep
           KEEP_DEV: 5     # pre-releases (dev) to keep
         run: |
@@ -158,44 +260,46 @@ jobs:
             gh release delete "$OLD" --yes --cleanup-tag || :
           done
 
-      - name: Update modules changelog and update json
-        id: update_config
+      - name: Update module update files, changelog and build state
         run: |
           git checkout -f "$UPDATE_BRANCH" || git switch --discard-changes --orphan "$UPDATE_BRANCH"
-          cp -f build.tmp build.md
-          get_update_json() {
-            echo "{
-            \"version\": \"$1\",
-            \"versionCode\": ${{ steps.next_ver_code.outputs.NEXT_VER_CODE }},
-            \"zipUrl\": \"$2\",
-            \"changelog\": \"https://raw.githubusercontent.com/$GITHUB_REPOSITORY/$UPDATE_BRANCH/build.md\"
-          }"
-          }
+          cp -f out/build.md build.md
 
-          cd build || { echo "build folder not found"; exit 1; }
-          for OUTPUT in *module*.zip; do
-            [ "$OUTPUT" = "*module*.zip" ] && continue
+          # module update files point to the new release; versionCode comes from the module itself,
+          # so carried (unchanged) modules don't show up as an update in the root manager
+          for OUTPUT in out/build/*module*.zip; do
+            [ -f "$OUTPUT" ] || continue
+            NAME=${OUTPUT##*/}
             ZIP_S=$(unzip -p "$OUTPUT" module.prop)
-            if ! UPDATE_JSON=$(echo "$ZIP_S" | grep updateJson); then continue; fi
+            if ! UPDATE_JSON=$(grep '^updateJson=' <<<"$ZIP_S"); then continue; fi
             UPDATE_JSON="${UPDATE_JSON##*/}"
-            VER=$(echo "$ZIP_S" | grep version=)
-            VER="${VER##*=}"
-            DLURL="$GITHUB_SERVER_URL/$GITHUB_REPOSITORY/releases/download/${{ steps.next_ver_code.outputs.NEXT_VER_CODE }}/${OUTPUT}"
-            get_update_json "$VER" "$DLURL" >"../$UPDATE_JSON"
+            VER=$(sed -n 's/^version=//p' <<<"$ZIP_S")
+            VERCODE=$(sed -n 's/^versionCode=//p' <<<"$ZIP_S")
+            jq -n --arg v "$VER" --argjson c "$VERCODE" \
+              --arg z "$GITHUB_SERVER_URL/$GITHUB_REPOSITORY/releases/download/$TAG/$NAME" \
+              --arg l "https://raw.githubusercontent.com/$GITHUB_REPOSITORY/$UPDATE_BRANCH/build.md" \
+              '{version: $v, versionCode: $c, zipUrl: $z, changelog: $l}' >"$UPDATE_JSON"
           done
-          cd ..
+          find . -maxdepth 1 -name "*-update.json" | grep . || : >dummy-update.json
 
-          find . -name "*-update.json" | grep . || : >dummy-update.json
+          # build state for the daily CI: "<app>|<patches release>" of the last successful build of every app
+          touch built-patches.txt
+          while IFS='|' read -r APP PATCHES; do
+            [ -n "$APP" ] || continue
+            grep -v "^${APP}|" built-patches.txt >built-patches.tmp || :
+            echo "${APP}|${PATCHES}" >>built-patches.tmp
+            sort -o built-patches.txt built-patches.tmp
+          done < out/built.list
+          rm -f built-patches.tmp
+          cat built-patches.txt
 
       - name: Commit module json changes
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-      
-          git add build.md *-update.json
-      
+          git add build.md built-patches.txt *-update.json
           if ! git diff --cached --quiet; then
-            git commit -m "Bump version ${{ steps.next_ver_code.outputs.NEXT_VER_CODE }}"
+            git commit -m "Bump version $TAG"
             git push origin "HEAD:$UPDATE_BRANCH"
           else
             echo "no changes!"

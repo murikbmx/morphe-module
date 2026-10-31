@@ -232,50 +232,53 @@ set_prebuilts() {
 	TOML="${BIN_DIR}/toml/tq-${arch}"
 }
 
+# Prints a config (json) with only the apps whose newest patches release is not built yet.
+# State: built-patches.txt ("<table>|<source>/patches-<ver>.<ext>" per line, kept in the update branch),
+# falls back to the "Patches:" lines of build.md. Apps that failed last time are retried.
 config_update() {
-	if [ ! -f build.md ]; then abort "build.md not available"; fi
-	declare -A sources
+	local state=""
+	if [ -f built-patches.txt ]; then
+		state=$(cat built-patches.txt)
+	elif [ -f build.md ]; then
+		state=""
+	else abort "neither built-patches.txt nor build.md is available"; fi
+	declare -A latest
 	: >"$TEMP_DIR"/skipped
-	local upped=()
-	local prcfg=false
+	local upped=() table_name t enabled src ver key resp tag_name asset want
 	for table_name in $(toml_get_table_names); do
 		if [ -z "$table_name" ]; then continue; fi
 		t=$(toml_get_table "$table_name")
 		enabled=$(toml_get "$t" enabled) || enabled=true
 		if [ "$enabled" = "false" ]; then continue; fi
-		PATCHES_SRC=$(toml_get "$t" patches-source) || PATCHES_SRC=$DEF_PATCHES_SRC
-		PATCHES_VER=$(toml_get "$t" patches-version) || PATCHES_VER=$DEF_PATCHES_VER
-		if [[ -v sources["$PATCHES_SRC/$PATCHES_VER"] ]]; then
-			if [ "${sources["$PATCHES_SRC/$PATCHES_VER"]}" = 1 ]; then upped+=("$table_name"); fi
-		else
-			sources["$PATCHES_SRC/$PATCHES_VER"]=0
-			local rv_rel="https://api.github.com/repos/${PATCHES_SRC}/releases"
-			if [ "$PATCHES_VER" = "dev" ]; then
-				last_patches=$(gh_req "$rv_rel" - | jq -e -r '.[0]') || continue
-			elif [ "$PATCHES_VER" = "latest" ]; then
-				last_patches=$(gh_req "$rv_rel/latest" -) || continue
+		src=$(toml_get "$t" patches-source) || src=$DEF_PATCHES_SRC
+		ver=$(toml_get "$t" patches-version) || ver=$DEF_PATCHES_VER
+		key="$src/$ver"
+		if [[ ! -v latest["$key"] ]]; then
+			local rv_rel="https://api.github.com/repos/${src}/releases"
+			if [ "$ver" = "dev" ]; then
+				resp=$(gh_req "$rv_rel" - | jq -e -r '.[0]') || continue
+			elif [ "$ver" = "latest" ]; then
+				resp=$(gh_req "$rv_rel/latest" -) || continue
 			else
-				last_patches=$(gh_req "$rv_rel/tags/${PATCHES_VER}" -) || continue
+				resp=$(gh_req "$rv_rel/tags/${ver}" -) || continue
 			fi
-			tag_name=$(jq -e -r '.tag_name' <<<"$last_patches") || abort "config_update error: No tag name"
-			if ! last_patches=$(jq -e -r '.assets[] | select(.name | (endswith("asc") or endswith("json")) | not) | .name' <<<"$last_patches"); then
-				abort "config_update error: '$last_patches'"
-			fi
-			if [ "$last_patches" ]; then
-				local name_ext="${last_patches##*.}"
-				last_patches="patches-${tag_name#v}.${name_ext}"
-
-				if ! OP=$(grep -m1 "^Patches: ${PATCHES_SRC}/${last_patches}" build.md); then
-					sources["$PATCHES_SRC/$PATCHES_VER"]=1
-					prcfg=true
-					upped+=("$table_name")
-				else
-					echo "$OP" >>"$TEMP_DIR"/skipped
-				fi
-			fi
+			tag_name=$(jq -e -r '.tag_name' <<<"$resp") || abort "config_update error: No tag name"
+			asset=$(jq -e -r '[.assets[] | select(.name | (endswith("asc") or endswith("json")) | not) | .name][0]' <<<"$resp") || abort "config_update error: '$resp'"
+			latest["$key"]="${src}/patches-${tag_name#v}.${asset##*.}"
 		fi
+		want=${latest["$key"]}
+		if [ -n "$state" ]; then
+			if grep -qxF "${table_name}|${want}" <<<"$state"; then
+				echo "${table_name}: ${want}" >>"$TEMP_DIR"/skipped
+				continue
+			fi
+		elif grep -q "^Patches: ${want}" build.md; then
+			echo "${table_name}: ${want}" >>"$TEMP_DIR"/skipped
+			continue
+		fi
+		upped+=("$table_name")
 	done
-	if [ "$prcfg" = true ]; then
+	if [ ${#upped[@]} -gt 0 ]; then
 		local query=""
 		for table in "${upped[@]}"; do
 			if [ -n "$query" ]; then query+=" or "; fi
@@ -1104,6 +1107,8 @@ build_rv() {
 		popd >/dev/null || :
 		pr "Built ${table} (root): '${BUILD_DIR}/${module_output}'"
 	done
+	# state for the daily CI: this app is built from this patches release
+	echo "${args[table_name]}|${args[patches_src]}/$(basename "$patches_jar")" >>"${TEMP_DIR}/built.list"
 }
 
 list_args() { tr -d '\t\r' <<<"$1" | tr -s ' ' | sed 's/" "/"\n"/g' | sed 's/\([^"]\)"\([^"]\)/\1'\''\2/g' | grep -v '^$' || :; }

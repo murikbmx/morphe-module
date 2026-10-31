@@ -40,6 +40,19 @@ if [ "${2-}" = "--config-update" ]; then
 	config_update
 	exit 0
 fi
+# file name prefixes of every enabled app ("youtube-dualvot"), used by the workflow to carry unchanged apps over
+if [ "${2-}" = "--list-prefixes" ]; then
+	for table_name in $(toml_get_table_names); do
+		t=$(toml_get_table "$table_name")
+		enabled=$(toml_get "$t" enabled) || enabled=true
+		if [ "$enabled" = false ]; then continue; fi
+		a=$(toml_get "$t" app-name) || a=$table_name
+		b=$(toml_get "$t" rv-brand) || b=$DEF_RV_BRAND
+		a=${a,,} b=${b,,}
+		echo "${a// /-}-${b// /-}"
+	done
+	exit 0
+fi
 
 : >build.md
 ENABLE_MODULE_UPDATE=$(toml_get "$main_config_t" enable-module-update) || ENABLE_MODULE_UPDATE=true
@@ -100,6 +113,8 @@ for table_name in $(toml_get_table_names); do
 	app_args[patcher_args]=$(toml_get "$t" patcher-args) || app_args[patcher_args]=""
 	app_args[settings_defaults]=$(toml_get "$t" settings-defaults) || app_args[settings_defaults]=""
 	app_args[table]=$table_name
+	app_args[table_name]=$table_name
+	app_args[patches_src]=$patches_src
 	app_args[build_mode]=$(toml_get "$t" build-mode) && {
 		if ! isoneof "${app_args[build_mode]}" both apk module; then
 			abort "ERROR: build-mode '${app_args[build_mode]}' is not a valid option for '${table_name}': only 'both', 'apk' or 'module' is allowed"
