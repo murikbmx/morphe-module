@@ -1,4 +1,4 @@
-Skipped Gboard: stock com.google.android.inputmethod.latin 18.5.4.993608717-release-arm64-v8a (arm64-v8a) was not found. Upload it to the 'stock-apks' release as 'com.google.android.inputmethod.latin-18.5.4.993608717-release-arm64-v8a-arm64-v8a.apk' (or '.apkm')  
+Gboard: 18.5.4.993608717-release-arm64-v8a  
 GooglePhotos: 7.92.0.977185651  
 YouTube: 21.30.216  
 Default Morphe settings for YouTube:  
