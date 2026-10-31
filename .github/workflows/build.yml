@@ -93,10 +93,11 @@ jobs:
           echo "${DELIM}" >> "$GITHUB_OUTPUT"
           cp -f build.md build.tmp
 
-          YT_VER=$(sed -n 's/^YouTube[^:]*: \([^ ]*\).*/\1/p' build.md | head -1)
-          PATCHES_VER=$(sed -n 's|^Patches: .*/patches-\(.*\)\.[^.]*  *$|\1|p' build.md | head -1)
-          TITLE="YouTube ${YT_VER:-?}"
-          if [ -n "$PATCHES_VER" ]; then TITLE+=" · Dual VoT ${PATCHES_VER}"; fi
+          # "App: version" lines of the build log, e.g. "YouTube 21.30.216 · GooglePhotos 7.92.0.977185651"
+          APPS=$(sed -n 's/^\([A-Za-z][A-Za-z0-9 ()-]*\): \([0-9][^ ]*\)  *$/\1 \2/p' build.md | sed 's/GooglePhotos/Google Photos/' | paste -sd '|' - | sed 's/|/ · /g')
+          VOT_VER=$(sed -n 's|^Patches: sashade8-ship-it/dual-vot-patches/patches-\(.*\)\.[^.]*  *$|\1|p' build.md | head -1)
+          TITLE="${APPS:-Release}"
+          if [ -n "$VOT_VER" ]; then TITLE+=" · Dual VoT ${VOT_VER}"; fi
           echo "RELEASE_TITLE=${TITLE}" >> "$GITHUB_OUTPUT"
 
       - name: Upload release

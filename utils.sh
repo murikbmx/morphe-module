@@ -171,45 +171,47 @@ get_prebuilts() {
 				) >&2
 				rm -r "${file}-zip" || :
 			fi
-			# change default values of Morphe settings (only once, right after the download)
-			if [ "$grab_cl" = "true" ] && [ -n "${SETTINGS_DEFAULTS-}" ]; then
-				apply_settings_defaults "$file" "$cl_dir" || return 1
-			fi
 		fi
 		echo -n "$file "
 	done
 	echo
 }
 
-# SETTINGS_DEFAULTS: whitespace separated key=value list, e.g. "morphe_shorts_autoplay=true morphe_header_logo=PREMIUM"
+# Makes a copy of a patches bundle with changed default values of Morphe settings.
+# $1 patches bundle, $2 output bundle, $3 whitespace separated key=value list
+# The extension (extensions/*.mpe) that contains all the keys is modified (e.g. YouTube, not YouTube Music).
+# Prints the applied list.
 apply_settings_defaults() {
-	local file=$1 cl_dir=$2
-	local ext=extensions/youtube.mpe
-	if ! unzip -l "$file" "$ext" >/dev/null 2>&1; then
-		epr "settings-defaults: '$ext' not found in '$file'"
-		return 1
-	fi
-	local work op
+	local file=$1 out=$2 defaults=$3
+	local work ext="" op="" e k keys errs=""
+	keys=$(tr -s ' \t' '\n' <<<"$defaults" | sed -n 's/^\([^=]\+\)=.*/\1/p')
 	work=$(mktemp -d -p "$TEMP_DIR")
-	# shellcheck disable=SC2086
-	if ! unzip -qo "$file" "$ext" -d "$work" ||
-		! op=$(java -cp "${BIN_DIR}/dexlib2.jar" tools/SettingsDefaults.java "$work/$ext" "$work/$ext.new" $SETTINGS_DEFAULTS 2>&1); then
-		epr "settings-defaults failed: $op"
+	unzip -qo "$file" 'extensions/*' -d "$work" || {
+		rm -rf "$work"
+		return 1
+	}
+	while IFS= read -r e; do
+		for k in $keys; do grep -qaF "$k" "$e" || continue 2; done
+		# shellcheck disable=SC2086
+		if op=$(java -cp "${BIN_DIR}/dexlib2.jar" tools/SettingsDefaults.java "$e" "$e.new" $defaults 2>&1); then
+			ext=${e#"$work/"}
+			break
+		fi
+		errs+="${e##*/}: ${op}; "
+	done < <(find "$work/extensions" -name '*.mpe' | sort)
+	if [ -z "$ext" ]; then
+		epr "settings-defaults: no extension of '$file' has all of [$(tr '\n' ' ' <<<"$keys")] ${errs}"
 		rm -rf "$work"
 		return 1
 	fi
 	mv -f "$work/$ext.new" "$work/$ext"
-	(cd "$work" && zip -0q "${CWD}/${file}" "$ext") || {
+	cp -f "$file" "$out" || return 1
+	(cd "$work" && zip -0q "${CWD}/${out}" "$ext") || {
 		rm -rf "$work"
 		return 1
 	}
 	rm -rf "$work"
-	pr "Default settings changed: $(tr '\n' ',' <<<"$op" | sed 's/,$//')" >&2
-	{
-		echo "Default Morphe settings in this build:  "
-		sed 's/^\(.*\) -> \(.*\) (.*)$/- \1 = \2  /' <<<"$op"
-		echo ""
-	} >>"${cl_dir}/changelog.md"
+	echo "$op"
 }
 
 set_prebuilts() {
@@ -802,13 +804,26 @@ build_rv() {
 		p_patcher_args=("${p_patcher_args[@]//-[ei] ${microg_patch}/}")
 	fi
 
+	if [ -n "${args[settings_defaults]}" ]; then
+		local sd_jar="${TEMP_DIR}/${app_name_l}-${args[rv_brand],,}-settings.${args[ptjar]##*.}" sd_op
+		sd_jar=${sd_jar// /-}
+		if ! sd_op=$(apply_settings_defaults "${args[ptjar]}" "$sd_jar" "${args[settings_defaults]}"); then
+			epr "Not building ${table}: could not apply settings-defaults"
+			return 0
+		fi
+		pr "Default settings for ${table}: $(tr '\n' ',' <<<"$sd_op" | sed 's/,$//')"
+		log "Default Morphe settings for ${table}:"
+		log "$(sed 's/^\(.*\) -> \(.*\) (.*)$/- \1 = \2/' <<<"$sd_op")"
+		args[ptjar]=$sd_jar
+	fi
+
 	local patcher_args patched_apk build_mode
 	local rv_brand_f=${args[rv_brand],,}
 	rv_brand_f=${rv_brand_f// /-}
 	for build_mode in "${build_mode_arr[@]}"; do
 		patcher_args=("${p_patcher_args[@]}")
 		pr "Building '${table}' in '$build_mode' mode"
-		if [ -n "$microg_patch" ]; then
+		if [ -n "$microg_patch" ] || [ -n "${args[module_excluded_patches]}${args[apk_excluded_patches]}" ]; then
 			patched_apk="${TEMP_DIR}/${app_name_l}-${rv_brand_f}-${version_f}-${arch_f}-${build_mode}.apk"
 		else
 			patched_apk="${TEMP_DIR}/${app_name_l}-${rv_brand_f}-${version_f}-${arch_f}.apk"
@@ -818,6 +833,7 @@ build_rv() {
 			if [ -n "$microg_patch" ]; then
 				patcher_args+=("-e \"${microg_patch}\"")
 			fi
+			if [ -n "${args[apk_excluded_patches]}" ]; then patcher_args+=("$(join_args "${args[apk_excluded_patches]}" -d)"); fi
 		elif [ "$build_mode" = "module" ]; then
 			if [ -n "$microg_patch" ]; then
 				patcher_args+=("-d \"${microg_patch}\"")
@@ -825,6 +841,7 @@ build_rv() {
 			if [ -n "$branding_patch" ]; then
 				patcher_args+=("-d \"${branding_patch}\"")
 			fi
+			if [ -n "${args[module_excluded_patches]}" ]; then patcher_args+=("$(join_args "${args[module_excluded_patches]}" -d)"); fi
 		else
 			abort unreachable
 		fi

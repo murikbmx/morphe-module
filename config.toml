@@ -1,15 +1,29 @@
 enable-module-update = true # set this to false if you do not want to receive updates for the module
 parallel-jobs = 1
 
-# Dual VoT patches: Morphe + Google/other and Yandex voice-over translation
+# Default patches: Dual VoT (Morphe + Google/other and Yandex voice-over translation)
 # https://github.com/sashade8-ship-it/dual-vot-patches
 patches-source = "sashade8-ship-it/dual-vot-patches"
 patches-version = "latest" # 'latest' (stable), 'dev' (newest release incl. pre-releases) or a tag, e.g. "v2.0.0-dualvot.8.5.4"
 cli-source = "MorpheApp/morphe-cli"
 cli-version = "latest"
 
-# Default values of Morphe settings baked into the APK and the module (users can still change them in Morphe settings).
-# key=value, separated by spaces/new lines. The build fails if a key is not found in the patches.
+# see CONFIG.md for more detailed explanations
+# stock apk sources are tried in this order: archive.org, APKMirror (blocked on GitHub, works on a home PC), Uptodown
+
+# Stable channel (default branch): latest stable dual-vot-patches release
+# the dev channel lives in the "dev" branch
+[YouTube]
+app-name = "YouTube"
+rv-brand = "DualVoT"
+build-mode = "both" # module for root (KernelSU/Magisk) + non-root APK (needs MicroG-RE)
+arch = "arm64-v8a"
+version = "auto" # newest version supported by the patches, downloaded exactly
+module-prop-name = "youtube-dualvot"
+included-patches = "'Voice over translation' 'Yandex voice-over translation'"
+module-excluded-patches = "'Spoof video streams'" # not needed with root: the module uses the real Google services
+# Default values of Morphe settings baked into the APK and the module (can still be changed in Morphe settings).
+# key=value, separated by spaces/new lines. The build of this app fails if a key is not found in the patches.
 #   morphe_header_logo                 Header logo: DEFAULT, REGULAR, PREMIUM, MORPHE
 #   morphe_shorts_autoplay             Autoplay Shorts: true / false
 #   morphe_video_quality_default_wifi  Default video quality on Wi-Fi: -2 (auto), 2160, 1440, 1080, 720, 480, 360, 240, 144
@@ -20,20 +34,20 @@ settings-defaults = """
   morphe_video_quality_default_wifi=1080
   morphe_shorts_quality_default_wifi=1080
   """
-
-# see CONFIG.md for more detailed explanations
-
-# Stable channel (default branch): latest stable dual-vot-patches release
-# the dev channel lives in the "dev" branch
-[YouTube]
-app-name = "YouTube"
-rv-brand = "DualVoT"
-build-mode = "both" # module for root (KernelSU/Magisk) + non-root APK (needs MicroG-RE)
-arch = "arm64-v8a"
-version = "auto" # newest YouTube version supported by dual-vot-patches, downloaded exactly from APKMirror
-module-prop-name = "youtube-dualvot"
-included-patches = "'Voice over translation' 'Yandex voice-over translation'"
-# stock YouTube sources, tried in order: archive.org, APKMirror (blocked on GitHub, works on a home PC), Uptodown
+archive-dlurl = "https://archive.org/download/jhc-apks/apks/com.google.android.youtube"
 apkmirror-dlurl = "https://www.apkmirror.com/apk/google-inc/youtube"
 uptodown-dlurl = "https://youtube.en.uptodown.com/android"
-archive-dlurl = "https://archive.org/download/jhc-apks/apks/com.google.android.youtube"
+
+# Google Photos with De-Vanced patches (Morphe based): Pixel spoofing for unlimited storage, MicroG support
+# https://github.com/RookieEnough/De-Vanced
+[GooglePhotos]
+app-name = "GooglePhotos"
+patches-source = "RookieEnough/De-Vanced"
+patches-version = "latest"
+rv-brand = "DeVanced"
+build-mode = "both" # module for root (KernelSU/Magisk) + non-root APK (needs MicroG-RE)
+arch = "arm64-v8a"
+version = "auto"
+module-prop-name = "googlephotos-devanced"
+archive-dlurl = "https://archive.org/download/jhc-apks/apks/com.google.android.apps.photos"
+apkmirror-dlurl = "https://www.apkmirror.com/apk/google-inc/photos"

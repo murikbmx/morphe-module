@@ -2,9 +2,11 @@
 
 [![CI](https://github.com/murikbmx/morphe-module/actions/workflows/ci.yml/badge.svg?event=schedule)](https://github.com/murikbmx/morphe-module/actions/workflows/ci.yml)
 
-Magisk / KernelSU / APatch module and non-root APK for **YouTube (arm64-v8a)** patched with
-[**dual-vot-patches**](https://github.com/sashade8-ship-it/dual-vot-patches): Morphe patches
-plus Google/other and Yandex voice-over translation in one bundle.
+Magisk / KernelSU / APatch modules and non-root APKs (arm64-v8a) for:
+- **YouTube** patched with [**dual-vot-patches**](https://github.com/sashade8-ship-it/dual-vot-patches): Morphe patches
+  plus Google/other and Yandex voice-over translation in one bundle.
+- **Google Photos** patched with [**De-Vanced**](https://github.com/RookieEnough/De-Vanced) (Morphe based):
+  Pixel spoofing for unlimited storage, MicroG support for the non-root APK.
 
 Get the [latest release](../../releases).
 
@@ -13,7 +15,7 @@ Get the [latest release](../../releases).
 - Picks the newest YouTube version supported by the patches (`version = "auto"`)
 - Morphe settings with custom defaults (`settings-defaults` in `config.toml`), can still be changed in the app:
   header logo **Premium**, **Shorts autoplay** on, default video and Shorts quality on Wi-Fi **1080p**
-- Daily CI: rebuilds automatically when a new dual-vot-patches release appears
+- Daily CI: rebuilds an app automatically when a new release of its patches appears
 - Module updates through the Magisk/KernelSU manager (`updateJson`)
 - Module:
   - installs the matching stock YouTube version itself if needed
@@ -21,8 +23,8 @@ Get the [latest release](../../releases).
   - recompiles odex (`speed-profile`) after install
   - action button in the root manager to enable/disable mounting
 
-Non-root APK: install [MicroG-RE](https://github.com/MorpheApp/MicroG-RE/releases) first, then the `youtube-dualvot-v*.apk` from the release.
-It installs next to the original YouTube (different package name), no root needed.
+Non-root APKs: install [MicroG-RE](https://github.com/MorpheApp/MicroG-RE/releases) first, then `youtube-dualvot-v*.apk`
+and/or `googlephotos-devanced-v*.apk` from the release. They install next to the original apps (different package names), no root needed.
 
 Use [zygisk-detach](https://github.com/j-hc/zygisk-detach) to detach YouTube from the Play Store.
 If you see "Reflash needed" after reboots, try [rvmm-zygisk-mount](https://github.com/j-hc/rvmm-zygisk-mount).
