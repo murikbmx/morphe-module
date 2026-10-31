@@ -76,6 +76,7 @@ for table_name in $(toml_get_table_names); do
 
 	if ! PREBUILTS="$(get_prebuilts "$cli_src" "$cli_ver" "$patches_src" "$patches_ver")"; then
 		epr "Could not get prebuilts"
+		report_skip "$table_name" "не удалось скачать патчи (${patches_src}, ${patches_ver}) или Morphe CLI."
 		continue
 	fi
 	read -r patches_jar cli_jar <<<"$PREBUILTS"
