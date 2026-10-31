@@ -72,7 +72,8 @@ jobs:
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          TAG=$(gh release list -L 1 | awk -F '\t' '{print $3}')
+          # numeric tags only ('stock-apks' is the storage release)
+          TAG=$(gh release list -L 400 --json tagName -q '.[].tagName' | grep -E '^[0-9]+$' | sort -n | tail -1 || :)
           if [ -z "$TAG" ]; then TAG=0; fi
           echo "NEXT_VER_CODE=$((TAG + 1))" >> $GITHUB_OUTPUT
 
@@ -83,6 +84,32 @@ jobs:
           GITHUB_REPOSITORY: ${{ github.repository }}
           NEXT_VER_CODE: ${{ steps.next_ver_code.outputs.NEXT_VER_CODE }}
           UPDATE_BRANCH: ${{ env.UPDATE_BRANCH }}
+
+      - name: Save stock APKs to the storage
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          KEEP_VERSIONS: 3 # stock versions to keep per app
+        run: |
+          if [ ! -s temp/stock-upload.list ]; then echo "nothing new to store"; exit 0; fi
+          if ! gh release view stock-apks >/dev/null 2>&1; then
+            gh release create stock-apks --title "Stock APKs (storage)" --prerelease --latest=false \
+              --notes "Original APKs used for the builds. Filled automatically; you can also upload files by hand: <package>-<version>-<arch>.apk (or .apkm for split bundles), e.g. com.google.android.youtube-21.30.216-arm64-v8a.apk"
+          fi
+          mkdir -p stock-upload
+          while IFS='|' read -r SRC NAME; do
+            [ -f "$SRC" ] && cp -f "$SRC" "stock-upload/$NAME"
+          done < temp/stock-upload.list
+          ls -lh stock-upload
+          gh release upload stock-apks stock-upload/* --clobber
+
+          # keep only the newest KEEP_VERSIONS versions of every package
+          gh release view stock-apks --json assets -q '.assets[].name' | while read -r N; do
+            P=${N%%-*}; R=${N#*-}; V=${R%%-*}; echo "$P $V $N"
+          done | sort -k1,1 -k2,2Vr | awk -v keep="$KEEP_VERSIONS" '{ if ($1 != p) { p = $1; n = 0; last = "" } if ($2 != last) { n++; last = $2 } if (n > keep) print $3 }' |
+            while read -r OLD; do
+              echo "Deleting old stock $OLD"
+              gh release delete-asset stock-apks "$OLD" --yes || :
+            done
 
       - name: Get output
         id: get_output
@@ -121,7 +148,7 @@ jobs:
           KEEP_STABLE: 10 # stable releases to keep
           KEEP_DEV: 5     # pre-releases (dev) to keep
         run: |
-          RELS=$(gh release list -L 400 --json tagName,isPrerelease,createdAt)
+          RELS=$(gh release list -L 400 --json tagName,isPrerelease,createdAt | jq 'map(select(.tagName != "stock-apks"))')
           {
             jq -r 'map(select(.isPrerelease | not)) | sort_by(.createdAt) | reverse | .[env.KEEP_STABLE | tonumber:][] | .tagName' <<<"$RELS"
             jq -r 'map(select(.isPrerelease)) | sort_by(.createdAt) | reverse | .[env.KEEP_DEV | tonumber:][] | .tagName' <<<"$RELS"
