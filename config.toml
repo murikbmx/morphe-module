@@ -10,14 +10,15 @@ cli-version = "latest"
 
 # see CONFIG.md for more detailed explanations
 
-# Stable channel (default branch): latest stable dual-vot-patches release
-# the dev channel lives in the "dev" branch
+# Dev channel ("dev" branch): newest dual-vot-patches release, including pre-releases. Manual builds only.
+# the stable channel lives in the default branch
 [YouTube]
 app-name = "YouTube"
-rv-brand = "DualVoT"
+rv-brand = "DualVoT Dev"
+patches-version = "dev"
 build-mode = "both" # module for root (KernelSU/Magisk) + non-root APK (needs MicroG-RE)
 arch = "arm64-v8a"
 version = "auto" # newest YouTube version supported by dual-vot-patches, downloaded exactly from APKMirror
-module-prop-name = "youtube-dualvot"
+module-prop-name = "youtube-dualvot-dev"
 included-patches = "'Voice over translation' 'Yandex voice-over translation'"
 apkmirror-dlurl = "https://www.apkmirror.com/apk/google-inc/youtube" # stock YouTube is downloaded from APKMirror
