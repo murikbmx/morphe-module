@@ -29,7 +29,6 @@ if ! PARALLEL_JOBS=$(toml_get "$main_config_t" parallel-jobs); then
 fi
 PARALLEL_JOBS=1 # TODO: multiple jobs were broken by recent cli versions. and i cant bother to fix it so instead, i disable it.
 REMOVE_RV_INTEGRATIONS_CHECKS=$(toml_get "$main_config_t" remove-rv-integrations-checks) || REMOVE_RV_INTEGRATIONS_CHECKS="true"
-SETTINGS_DEFAULTS=$(toml_get "$main_config_t" settings-defaults) || SETTINGS_DEFAULTS=""
 DEF_PATCHES_VER=$(toml_get "$main_config_t" patches-version) || DEF_PATCHES_VER="latest"
 DEF_CLI_VER=$(toml_get "$main_config_t" cli-version) || DEF_CLI_VER="latest"
 DEF_PATCHES_SRC=$(toml_get "$main_config_t" patches-source) || DEF_PATCHES_SRC="MorpheApp/morphe-patches"
@@ -88,11 +87,17 @@ for table_name in $(toml_get_table_names); do
 	app_args[excluded_patches]=$(toml_get "$t" excluded-patches) || app_args[excluded_patches]=""
 	if [ -n "${app_args[excluded_patches]}" ] && [[ ${app_args[excluded_patches]} != *'"'* ]]; then abort "patch names inside excluded-patches must be quoted"; fi
 	app_args[included_patches]=$(toml_get "$t" included-patches) || app_args[included_patches]=""
+	# patches excluded only from the root module / only from the non-root apk
+	app_args[module_excluded_patches]=$(toml_get "$t" module-excluded-patches) || app_args[module_excluded_patches]=""
+	if [ -n "${app_args[module_excluded_patches]}" ] && [[ ${app_args[module_excluded_patches]} != *'"'* ]]; then abort "patch names inside module-excluded-patches must be quoted"; fi
+	app_args[apk_excluded_patches]=$(toml_get "$t" apk-excluded-patches) || app_args[apk_excluded_patches]=""
+	if [ -n "${app_args[apk_excluded_patches]}" ] && [[ ${app_args[apk_excluded_patches]} != *'"'* ]]; then abort "patch names inside apk-excluded-patches must be quoted"; fi
 	if [ -n "${app_args[included_patches]}" ] && [[ ${app_args[included_patches]} != *'"'* ]]; then abort "patch names inside included-patches must be quoted"; fi
 	app_args[exclusive_patches]=$(toml_get "$t" exclusive-patches) && vtf "${app_args[exclusive_patches]}" "exclusive-patches" || app_args[exclusive_patches]=false
 	app_args[version]=$(toml_get "$t" version) || app_args[version]="auto"
 	app_args[app_name]=$(toml_get "$t" app-name) || app_args[app_name]=$table_name
 	app_args[patcher_args]=$(toml_get "$t" patcher-args) || app_args[patcher_args]=""
+	app_args[settings_defaults]=$(toml_get "$t" settings-defaults) || app_args[settings_defaults]=""
 	app_args[table]=$table_name
 	app_args[build_mode]=$(toml_get "$t" build-mode) && {
 		if ! isoneof "${app_args[build_mode]}" both apk module; then
