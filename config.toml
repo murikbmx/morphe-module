@@ -54,3 +54,18 @@ version = "auto"
 module-prop-name = "googlephotos-devanced"
 archive-dlurl = "https://archive.org/download/jhc-apks/apks/com.google.android.apps.photos"
 apkmirror-dlurl = "https://www.apkmirror.com/apk/google-inc/photos"
+
+# Gboard with jasonwu1994/Gboard-patches (Morphe based). Non-root APK only.
+# "Package Rename" (on by default) installs it next to the original Gboard as "GboardWu"
+# https://github.com/jasonwu1994/Gboard-patches
+[Gboard]
+app-name = "Gboard"
+pkg-name = "com.google.android.inputmethod.latin"
+patches-source = "jasonwu1994/Gboard-patches"
+patches-version = "latest"
+rv-brand = "Wu"
+build-mode = "apk"
+arch = "arm64-v8a"
+version = "auto"
+archive-dlurl = "https://archive.org/download/jhc-apks/apks/com.google.android.inputmethod.latin"
+apkmirror-dlurl = "https://www.apkmirror.com/apk/google-inc/gboard"
