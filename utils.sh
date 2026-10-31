@@ -316,6 +316,14 @@ gh_dl() {
 }
 
 log() { echo -e "$1  " >>"build.md"; }
+# an app was not built: say why in the release notes and in the GitHub job summary
+report_skip() {
+	local table=$1 reason=$2
+	log "⚠️ **${table} не собран:** ${reason}"
+	if [ -n "${GITHUB_STEP_SUMMARY-}" ]; then
+		printf '### ⚠️ %s не собран\n%s\n\n' "$table" "$reason" >>"$GITHUB_STEP_SUMMARY"
+	fi
+}
 get_highest_ver() {
 	local vers m
 	vers=$(tee)
@@ -605,7 +613,7 @@ get_stock_vers() {
 dl_stock() {
 	local _url=$1 _version=$2 output=$3 arch=$4
 	local name asset=""
-	for name in "${pkg_name}-${version_f}-${arch// /}.apkm" "${pkg_name}-${version_f}-${arch// /}.apk" \
+	for name in "${pkg_name}-${ver_arch}.apkm" "${pkg_name}-${ver_arch}.apk" \
 		"${pkg_name}-${version_f}-all.apkm" "${pkg_name}-${version_f}-all.apk"; do
 		asset=$(jq -r --arg n "$name" '.assets[] | select(.name == $n) | .url' <<<"$__STOCK_RESP__")
 		if [ -n "$asset" ]; then break; fi
@@ -735,6 +743,7 @@ patch_apk() {
 	local cmd_log=${cmd//"$ks_pass"/***}
 	cmd_log=${cmd_log//"$ks_key_pass"/***}
 	pr "$cmd_log"
+	PATCH_FAIL_REASON=""
 	local plog="${tmp_files}.log"
 	if ! (set -o pipefail; eval "$cmd" 2>&1 | tee "$plog"); then
 		rm "$patched_apk" "$plog" 2>/dev/null || :
@@ -746,11 +755,13 @@ patch_apk() {
 	got=$(sed -n "s/.*incompatible with ${pkg_name-} \(.*\)\$/\1/p" "$plog" | head -1)
 	if [ -n "${version-}" ] && [ -n "$got" ] && [ "$got" != "${version}" ]; then
 		epr "Stock apk is version '$got', but the patches need '${version}'. Not using it."
+		PATCH_FAIL_REASON="Скачан оригинал версии ${got}, а патчам нужна ${version}."
 		rm -f "$patched_apk" "$plog"
 		return 1
 	fi
 	if ! grep -q "Applied: " "$plog"; then
 		epr "No patch was applied to '$stock_input'"
+		PATCH_FAIL_REASON="Ни один патч не применился."
 		rm -f "$patched_apk" "$plog"
 		return 1
 	fi
@@ -804,6 +815,7 @@ build_rv() {
 
 	if [ -z "$pkg_name" ]; then
 		epr "empty pkg name, not building ${table}."
+		report_skip "$table" "не удалось определить имя пакета (задайте pkg-name в config.toml)."
 		return 0
 	fi
 	pr "Package name of '${table}' is '$pkg_name'"
@@ -811,13 +823,17 @@ build_rv() {
 
 	local is_experimental="false"
 	if [ "$version_mode" = "experimental" ]; then is_experimental="true"; fi
-	list_patches=$(patches_list "$cli_jar" "$patches_jar" "$pkg_name" "$is_experimental") || return 1
+	if ! list_patches=$(patches_list "$cli_jar" "$patches_jar" "$pkg_name" "$is_experimental"); then
+		report_skip "$table" "не удалось получить список патчей для ${pkg_name}."
+		return 1
+	fi
 	local get_latest_ver=false
 	if isoneof "$version_mode" "auto" "experimental"; then
 		# pick the version from the whole patches bundle (list-versions), not only from included patches,
 		# so the stock app always matches what the patches require
 		if ! version=$(get_patch_last_supported_ver "$list_patches" "$pkg_name" "" "$is_experimental"); then
 			epr "get_patch_last_supported_ver failed '$list_patches'"
+			report_skip "$table" "не удалось определить, какая версия ${pkg_name} нужна патчам."
 			return
 		elif [ -z "$version" ]; then get_latest_ver="true"; fi
 	elif [ "$version_mode" = "latest" ]; then
@@ -838,6 +854,7 @@ build_rv() {
 	fi
 	if [ -z "$version" ]; then
 		epr "empty version, not building ${table}."
+		report_skip "$table" "не удалось определить версию для сборки."
 		return 0
 	fi
 
@@ -852,7 +869,10 @@ build_rv() {
 	pr "Choosing version '${version}' for ${table}"
 	local version_f=${version// /}
 	version_f=${version_f#v}
-	local stock_apk="${TEMP_DIR}/${pkg_name}-${version_f}-${arch_f}.apk" stock_from=""
+	# "<version>-<arch>" for file names; versions like 18.5.4.993608717-release-arm64-v8a already end with the arch
+	local ver_arch="${version_f}-${arch_f}"
+	if [[ $version_f == *"-${arch_f}" ]]; then ver_arch=$version_f; fi
+	local stock_apk="${TEMP_DIR}/${pkg_name}-${ver_arch}.apk" stock_from=""
 	if [ ! -f "$stock_apk" ]; then
 		for dl_p in "${DL_SRCS[@]}"; do
 			if [ -z "${args[${dl_p}_dlurl]}" ]; then continue; fi
@@ -874,9 +894,9 @@ build_rv() {
 			epr "Stock apk ${version} not found in any source (${DL_SRCS[*]}): $stock_apk"
 			local hint_url="https://www.apkmirror.com"
 			if [ -n "${args[apkmirror_hint]-}" ]; then hint_url=${args[apkmirror_hint]}; fi
-			epr "Fix: download ${pkg_name} ${version} (${arch}) yourself, e.g. from ${hint_url}, and upload it to the '${STOCK_TAG}' release of this repo as '${pkg_name}-${version_f}-${arch_f}.apk' ('.apkm' for split bundles), then run the build again"
+			epr "Fix: download ${pkg_name} ${version} (${arch}) yourself, e.g. from ${hint_url}, and upload it to the '${STOCK_TAG}' release of this repo as '${pkg_name}-${ver_arch}.apk' ('.apkm' for split bundles), then run the build again"
 			log "⚠️ ${table} не собран: не удалось скачать оригинал. Нужна версия **${version}** (${arch})."
-			log "Скачайте её, например, с ${hint_url} и загрузите в релиз '${STOCK_TAG}' с именем \`${pkg_name}-${version_f}-${arch_f}.apk\` (или \`.apkm\` для split-архива), затем запустите сборку снова."
+			log "Скачайте её, например, с ${hint_url} и загрузите в релиз '${STOCK_TAG}' с именем \`${pkg_name}-${ver_arch}.apk\` (или \`.apkm\` для split-архива), затем запустите сборку снова."
 			if [ -n "${GITHUB_STEP_SUMMARY-}" ]; then
 				{
 					echo "### ⚠️ ${table} не собран"
@@ -884,7 +904,7 @@ build_rv() {
 					echo ""
 					echo "- Нужна версия: **${version}** (${arch})"
 					echo "- Где взять: ${hint_url}"
-					echo "- Куда загрузить: релиз [${STOCK_TAG}](${GITHUB_SERVER_URL:-https://github.com}/${GITHUB_REPOSITORY:-murikbmx/morphe-module}/releases/tag/${STOCK_TAG}), имя файла \`${pkg_name}-${version_f}-${arch_f}.apk\` (или \`.apkm\`)"
+					echo "- Куда загрузить: релиз [${STOCK_TAG}](${GITHUB_SERVER_URL:-https://github.com}/${GITHUB_REPOSITORY:-murikbmx/morphe-module}/releases/tag/${STOCK_TAG}), имя файла \`${pkg_name}-${ver_arch}.apk\` (или \`.apkm\`)"
 					echo "- Потом запустите сборку снова"
 					echo ""
 				} >>"$GITHUB_STEP_SUMMARY"
@@ -900,21 +920,23 @@ build_rv() {
 		local a="${stock_apk}-zip/base.apk"
 		if ! sig_op=$(check_sig "$a" "$pkg_name" 2>&1); then
 			epr "Not building $table, apk signature mismatch '$a': $sig_op"
+			report_skip "$table" "подпись скачанного оригинала ${version} не совпадает с подписью Google. Файл подозрительный, его не используем."
 			return 0
 		fi
 		rm -rf "${stock_apk}-zip" || :
 	else
 		if ! sig_op=$(check_sig "$stock_apk" "$pkg_name" 2>&1); then
 			epr "Not building $table, apk signature mismatch '$stock_apk': $sig_op"
+			report_skip "$table" "подпись скачанного оригинала ${version} не совпадает с подписью Google. Файл подозрительный, его не используем."
 			return 0
 		fi
 	fi
 	# keep what was downloaded from a mirror in the own storage (uploaded by the workflow after the build)
 	if [ -n "$stock_from" ] && [ "$stock_from" != stock ] && [ -n "${GITHUB_REPOSITORY-}" ]; then
 		if [ -f "${stock_apk}.apkm" ]; then
-			echo "${stock_apk}.apkm|${pkg_name}-${version_f}-${arch_f}.apkm" >>"${TEMP_DIR}/stock-upload.list"
+			echo "${stock_apk}.apkm|${pkg_name}-${ver_arch}.apkm" >>"${TEMP_DIR}/stock-upload.list"
 		else
-			echo "${stock_apk}|${pkg_name}-${version_f}-${arch_f}.apk" >>"${TEMP_DIR}/stock-upload.list"
+			echo "${stock_apk}|${pkg_name}-${ver_arch}.apk" >>"${TEMP_DIR}/stock-upload.list"
 		fi
 	fi
 	log "${table}: ${version}"
@@ -938,6 +960,7 @@ build_rv() {
 		sd_jar=${sd_jar// /-}
 		if ! sd_op=$(apply_settings_defaults "${args[ptjar]}" "$sd_jar" "${args[settings_defaults]}"); then
 			epr "Not building ${table}: could not apply settings-defaults"
+			report_skip "$table" "не удалось применить настройки по умолчанию (settings-defaults): вероятно, в новых патчах изменились названия настроек."
 			return 0
 		fi
 		pr "Default settings for ${table}: $(tr '\n' ',' <<<"$sd_op" | sed 's/,$//')"
@@ -953,9 +976,9 @@ build_rv() {
 		patcher_args=("${p_patcher_args[@]}")
 		pr "Building '${table}' in '$build_mode' mode"
 		if [ -n "$microg_patch" ] || [ -n "${args[module_excluded_patches]}${args[apk_excluded_patches]}" ]; then
-			patched_apk="${TEMP_DIR}/${app_name_l}-${rv_brand_f}-${version_f}-${arch_f}-${build_mode}.apk"
+			patched_apk="${TEMP_DIR}/${app_name_l}-${rv_brand_f}-${ver_arch}-${build_mode}.apk"
 		else
-			patched_apk="${TEMP_DIR}/${app_name_l}-${rv_brand_f}-${version_f}-${arch_f}.apk"
+			patched_apk="${TEMP_DIR}/${app_name_l}-${rv_brand_f}-${ver_arch}.apk"
 		fi
 
 		if [ "$build_mode" = "apk" ]; then
@@ -1015,10 +1038,11 @@ build_rv() {
 			fi
 		fi
 
-		local apk_output="${BUILD_DIR}/${app_name_l}-${rv_brand_f}-v${version_f}-${arch_f}.apk"
+		local apk_output="${BUILD_DIR}/${app_name_l}-${rv_brand_f}-v${ver_arch}.apk"
 		if [ "${NORB:-}" != true ] || { [ ! -f "$patched_apk" ] && [ ! -f "$apk_output" ]; }; then
 			if ! patch_apk "$stock_apk" "$patched_apk" "${patcher_args[*]}" "${args[cli]}" "${args[ptjar]}"; then
 				epr "Building '${table}' failed!"
+				report_skip "$table" "ошибка при патчинге (${build_mode}). ${PATCH_FAIL_REASON:-Подробности в логе сборки.}"
 				return 0
 			fi
 		fi
@@ -1048,7 +1072,7 @@ build_rv() {
 			"https://raw.githubusercontent.com/${GITHUB_REPOSITORY-}/${UPDATE_BRANCH:-update}/${upj}" \
 			"$base_template"
 
-		local module_output="${app_name_l}-${rv_brand_f}-module-v${version_f}-${arch_f}.zip"
+		local module_output="${app_name_l}-${rv_brand_f}-module-v${ver_arch}.zip"
 		pr "Packing module ${table}"
 		cp -f "$patched_apk" "${base_template}/base.apk"
 
