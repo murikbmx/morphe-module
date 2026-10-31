@@ -127,6 +127,12 @@ for table_name in $(toml_get_table_names); do
 		app_args[apkmirror_dlurl]=""
 		app_args[uptodown_dlurl]=""
 	fi
+	# APKPure API is used for every app with a known package name (it works on GitHub too)
+	if [ -n "${app_args[pkg_name]-}" ] || toml_get "$t" pkg-name >/dev/null; then
+		app_args[apkpure_dlurl]="https://api.pureapk.com/m/v3/cms/app_version"
+	else
+		app_args[apkpure_dlurl]=""
+	fi
 	# own storage of stock apks (the 'stock-apks' release), only when building on GitHub or with STOCK_REPO set
 	if [ -n "${STOCK_REPO:-${GITHUB_REPOSITORY-}}" ]; then
 		app_args[stock_dlurl]="https://api.github.com/repos/${STOCK_REPO:-${GITHUB_REPOSITORY}}/releases/tags/${STOCK_TAG}"

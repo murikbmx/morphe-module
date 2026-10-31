@@ -8,9 +8,10 @@ BUILD_DIR="build"
 # download sources, tried in this order:
 #   stock     - own storage: the 'stock-apks' release of this repo (filled automatically by CI, or by hand)
 #   archive   - archive.org mirror
+#   apkpure   - APKPure app API (works on GitHub), used automatically for every app with pkg-name
 #   apkmirror - blocks GitHub runners (403), but works from home PCs
 #   uptodown  - downloads need a captcha now, kept only as a last resort
-DL_SRCS=("direct" "stock" "archive" "apkmirror" "uptodown")
+DL_SRCS=("direct" "stock" "archive" "apkpure" "apkmirror" "uptodown")
 STOCK_TAG="stock-apks"
 
 if [ "${GITHUB_TOKEN-}" ]; then GH_HEADER="Authorization: token ${GITHUB_TOKEN}"; else GH_HEADER=; fi
@@ -618,6 +619,52 @@ dl_stock() {
 	fi
 }
 
+# -------------------- apkpure --------------------
+# APKPure app API (the one apps like apkeep use). The response is protobuf, tools/apkpure.py finds the link.
+get_apkpure_resp() {
+	local abis
+	case "${arch-}" in
+	arm64-v8a) abis="arm64-v8a" ;;
+	arm-v7a) abis="armeabi-v7a,armeabi" ;;
+	x86 | x86_64) abis="$arch" ;;
+	*) abis="arm64-v8a,armeabi-v7a,armeabi" ;;
+	esac
+	__APKPURE_RESP__="${TEMP_DIR}/apkpure-${pkg_name}-${abis%%,*}.bin"
+	rm -f "$__APKPURE_RESP__"
+	_req "${1}?hl=en-US&package_name=${pkg_name}" "$__APKPURE_RESP__" \
+		-H "User-Agent: okhttp/4.12.0" -H "x-sv: 29" -H "x-abis: ${abis}" -H "x-gp: 1"
+}
+get_apkpure_pkg_name() { return 1; }
+get_apkpure_vers() { python3 -I tools/apkpure.py "$__APKPURE_RESP__" --versions; }
+dl_apkpure() {
+	local _url=$1 version=$2 output=$3
+	local found kind link
+	found=$(python3 -I tools/apkpure.py "$__APKPURE_RESP__" "$version") || return 1
+	kind=${found%% *} link=${found#* }
+	if [ "$kind" = APK ]; then
+		_req "$link" "$output" -H "User-Agent: okhttp/4.12.0"
+		return
+	fi
+	# XAPK: <pkg>.apk + config.*.apk (+ manifest.json, icon) -> repack the apks as an .apkm-like bundle with base.apk
+	local work
+	work=$(mktemp -d -p "$TEMP_DIR")
+	if ! _req "$link" "$work/app.xapk" -H "User-Agent: okhttp/4.12.0" || ! unzip -qo "$work/app.xapk" '*.apk' -d "$work/x"; then
+		rm -rf "$work"
+		return 1
+	fi
+	if [ -f "$work/x/${pkg_name}.apk" ]; then mv -f "$work/x/${pkg_name}.apk" "$work/x/base.apk"; fi
+	if [ ! -f "$work/x/base.apk" ]; then
+		rm -rf "$work"
+		return 1
+	fi
+	(cd "$work/x" && zip -0qr "${CWD}/${output}.apkm" ./*.apk) || {
+		rm -rf "$work"
+		return 1
+	}
+	rm -rf "$work"
+	merge_splits "${output}.apkm" "$output"
+}
+
 # -------------------- archive --------------------
 dl_archive() {
 	local url=$1 version=$2 output=$3 arch=$4
@@ -743,7 +790,7 @@ build_rv() {
 		pkg_name="${args[pkg_name]}"
 	else
 		for dl_p in "${DL_SRCS[@]}"; do
-			if [ -z "${args[${dl_p}_dlurl]}" ] || [ "$dl_p" = stock ]; then continue; fi
+			if [ -z "${args[${dl_p}_dlurl]}" ] || isoneof "$dl_p" stock apkpure; then continue; fi
 			if ! get_"${dl_p}"_resp "${args[${dl_p}_dlurl]}" || ! pkg_name=$(get_"${dl_p}"_pkg_name); then
 				args[${dl_p}_dlurl]=""
 				wpr "Could not find ${table} in ${dl_p}, trying the next source"
@@ -828,7 +875,20 @@ build_rv() {
 			local hint_url="https://www.apkmirror.com"
 			if [ -n "${args[apkmirror_hint]-}" ]; then hint_url=${args[apkmirror_hint]}; fi
 			epr "Fix: download ${pkg_name} ${version} (${arch}) yourself, e.g. from ${hint_url}, and upload it to the '${STOCK_TAG}' release of this repo as '${pkg_name}-${version_f}-${arch_f}.apk' ('.apkm' for split bundles), then run the build again"
-			log "Skipped ${table}: stock ${pkg_name} ${version} (${arch}) was not found. Upload it to the '${STOCK_TAG}' release as '${pkg_name}-${version_f}-${arch_f}.apk' (or '.apkm')"
+			log "⚠️ ${table} не собран: не удалось скачать оригинал. Нужна версия **${version}** (${arch})."
+			log "Скачайте её, например, с ${hint_url} и загрузите в релиз '${STOCK_TAG}' с именем \`${pkg_name}-${version_f}-${arch_f}.apk\` (или \`.apkm\` для split-архива), затем запустите сборку снова."
+			if [ -n "${GITHUB_STEP_SUMMARY-}" ]; then
+				{
+					echo "### ⚠️ ${table} не собран"
+					echo "Не удалось скачать оригинал ни из одного источника."
+					echo ""
+					echo "- Нужна версия: **${version}** (${arch})"
+					echo "- Где взять: ${hint_url}"
+					echo "- Куда загрузить: релиз [${STOCK_TAG}](${GITHUB_SERVER_URL:-https://github.com}/${GITHUB_REPOSITORY:-murikbmx/morphe-module}/releases/tag/${STOCK_TAG}), имя файла \`${pkg_name}-${version_f}-${arch_f}.apk\` (или \`.apkm\`)"
+					echo "- Потом запустите сборку снова"
+					echo ""
+				} >>"$GITHUB_STEP_SUMMARY"
+			fi
 			return 0
 		fi
 	fi
