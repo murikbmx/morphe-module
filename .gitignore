@@ -12,3 +12,4 @@ cmpr
 *.bks
 release.keystore
 KEYSTORE_*.txt
+__pycache__/
