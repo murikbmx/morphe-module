@@ -5,8 +5,9 @@ CWD=$(pwd)
 TEMP_DIR="temp"
 BIN_DIR="bin"
 BUILD_DIR="build"
-# download sources, tried in this order: APKMirror first, then Uptodown and archive.org as fallbacks
-DL_SRCS=("direct" "apkmirror" "uptodown" "archive")
+# download sources, tried in this order. archive.org first: APKMirror blocks GitHub runners (403),
+# but works from home PCs. Uptodown downloads need a captcha now, it is kept only as a last resort.
+DL_SRCS=("direct" "archive" "apkmirror" "uptodown")
 
 if [ "${GITHUB_TOKEN-}" ]; then GH_HEADER="Authorization: token ${GITHUB_TOKEN}"; else GH_HEADER=; fi
 NEXT_VER_CODE=${NEXT_VER_CODE:-$(date +'%Y%m%d')}
@@ -287,7 +288,7 @@ _req() {
 		fi
 	fi
 	if ! curl -L -c "$TEMP_DIR/cookie.txt" -b "$TEMP_DIR/cookie.txt" --connect-timeout 10 --retry 1 --fail -s -S "$@" "$ip" -o "$dlp"; then
-		epr "Request failed: $ip"
+		wpr "Request failed: $ip"
 		if [ "$dlp" != - ]; then rm -f "$dlp"; fi
 		return 1
 	fi
@@ -687,7 +688,7 @@ build_rv() {
 			if [ -z "${args[${dl_p}_dlurl]}" ]; then continue; fi
 			if ! get_"${dl_p}"_resp "${args[${dl_p}_dlurl]}" || ! pkg_name=$(get_"${dl_p}"_pkg_name); then
 				args[${dl_p}_dlurl]=""
-				epr "ERROR: Could not find ${table} in ${dl_p}"
+				wpr "Could not find ${table} in ${dl_p}, trying the next source"
 				continue
 			fi
 			tried_dl+=("$dl_p")
@@ -753,18 +754,18 @@ build_rv() {
 			pr "Downloading '${table}' from '${dl_p}'"
 			if ! isoneof "$dl_p" "${tried_dl[@]}"; then
 				if ! get_"${dl_p}"_resp "${args[${dl_p}_dlurl]}"; then
-					epr "ERROR: Could not get '${table}' from '${dl_p}'"
+					wpr "Could not get '${table}' from '${dl_p}', trying the next source"
 					continue
 				fi
 			fi
 			if ! dl_"${dl_p}" "${args[${dl_p}_dlurl]}" "$version" "$stock_apk" "$arch" "${args[dpi]}" "$get_latest_ver"; then
-				epr "ERROR: Could not download '${table}' from '${dl_p}' with version '${version}', arch '${arch}', dpi '${args[dpi]}'"
+				wpr "Could not download '${table}' from '${dl_p}', trying the next source. version '${version}', arch '${arch}', dpi '${args[dpi]}'"
 				continue
 			fi
 			break
 		done
 		if [ ! -f "$stock_apk" ]; then
-			epr "Stock apk not found ($stock_apk)"
+			epr "Stock apk ${version} not found in any source (${DL_SRCS[*]}): $stock_apk"
 			return 0
 		fi
 	fi

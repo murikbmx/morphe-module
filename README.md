@@ -49,7 +49,7 @@ Two channels in two branches, two separate modules (install only one of them):
 
 Manual run: Actions → **Build Modules** → **Run workflow** → pick the branch (`main` or `dev`).
 
-Stock YouTube is downloaded from APKMirror (fallbacks: Uptodown, then archive.org), patches from dual-vot-patches releases.
+Stock YouTube is downloaded from archive.org, then APKMirror (blocked on GitHub runners, works on a home PC), then Uptodown, patches from dual-vot-patches releases.
 Old releases are deleted automatically: the last 10 stable and 5 dev releases are kept.
 Each build creates a GitHub release titled `YouTube <version> · Dual VoT <patches version>`
 with a changelog (YouTube version, patches/CLI versions and the patches release notes).
