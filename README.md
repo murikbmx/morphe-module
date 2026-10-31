@@ -54,7 +54,7 @@ Two channels in two branches, two separate modules (install only one of them):
 Manual run: Actions → **Build Modules** → **Run workflow** → pick the branch (`main` or `dev`).
 
 Stock apks are taken from the own storage first (the `stock-apks` release of this repo), then archive.org,
-APKMirror (blocked on GitHub runners, works on a home PC) and Uptodown. Every stock apk downloaded from a mirror
+APKPure, APKMirror (blocked on GitHub runners, works on a home PC) and Uptodown. Every stock apk downloaded from a mirror
 is saved to the storage (last 3 versions per app are kept). If no source has the version the patches need,
 the build log says which file to upload to `stock-apks` by hand, e.g. `com.google.android.youtube-21.30.216-arm64-v8a.apk`
 (`.apkm` for split bundles). Stock apks are checked against the original Google signatures (`sig.txt`).
