@@ -1,0 +1,6 @@
+{
+  "version": "v21.30.216 (patches 2.1.0-dev.4-dualvot.8.5.4)",
+  "versionCode": 9,
+  "zipUrl": "https://github.com/murikbmx/morphe-module/releases/download/9/youtube-dualvot-dev-module-v21.30.216-arm64-v8a.zip",
+  "changelog": "https://raw.githubusercontent.com/murikbmx/morphe-module/update-dev/build.md"
+}
