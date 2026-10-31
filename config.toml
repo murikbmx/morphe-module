@@ -30,11 +30,15 @@ module-excluded-patches = "'Spoof video streams'" # not needed with root: the mo
 #   morphe_shorts_autoplay             Autoplay Shorts: true / false
 #   morphe_video_quality_default_wifi  Default video quality on Wi-Fi: -2 (auto), 2160, 1440, 1080, 720, 480, 360, 240, 144
 #   morphe_shorts_quality_default_wifi Default Shorts quality on Wi-Fi: -2 (auto), 2160, 1440, 1080, 720, 480, 360, 240
+#   morphe_hide_end_screen_suggested_video  Hide suggested video at the end of a video: true / false
+#   morphe_hide_end_screen_cards       Hide end screen cards (next video tiles): true / false
 settings-defaults = """
   morphe_header_logo=PREMIUM
   morphe_shorts_autoplay=true
   morphe_video_quality_default_wifi=1080
   morphe_shorts_quality_default_wifi=1080
+  morphe_hide_end_screen_suggested_video=true
+  morphe_hide_end_screen_cards=true
   """
 archive-dlurl = "https://archive.org/download/jhc-apks/apks/com.google.android.youtube"
 apkmirror-dlurl = "https://www.apkmirror.com/apk/google-inc/youtube"
