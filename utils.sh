@@ -161,9 +161,12 @@ get_prebuilts() {
 					echo -e "<details><summary>Patches release notes (${tag_name})</summary>\n\n${rel_body}\n\n</details>\n" >>"${cl_dir}/changelog.md"
 				fi
 			fi
+			local extensions_ext=""
 			if [ "$REMOVE_RV_INTEGRATIONS_CHECKS" = "true" ]; then
-				local extensions_ext
-				extensions_ext=$(unzip -l "${file}" "extensions/shared.*" | grep -o "shared\..*") extensions_ext="${extensions_ext#*.}"
+				extensions_ext=$(unzip -l "${file}" "extensions/shared.*" 2>/dev/null | grep -o "shared\..*") extensions_ext="${extensions_ext#*.}"
+			fi
+			# bundles without extensions/shared.* (e.g. Gboard patches) have nothing to strip
+			if [ "$REMOVE_RV_INTEGRATIONS_CHECKS" = "true" ] && [ -n "$extensions_ext" ]; then
 				(
 					mkdir -p "${file}-zip" || return 1
 					unzip -qo "${file}" -d "${file}-zip" || return 1
@@ -430,7 +433,7 @@ merge_splits() {
 
 # -------------------- apkmirror --------------------
 apkmirror_search() {
-	local resp="$1" dpi="$2" arch="$3" apk_bundle="$4"
+	local resp="$1" dpi="$2" arch="$3" apk_bundle="$4" want_ver="${5-}"
 	local dlurl="" node app_table emptyCheck
 
 	local apparch=('universal' 'noarch' 'arm64-v8a + armeabi-v7a')
@@ -450,6 +453,8 @@ apkmirror_search() {
 		if [ -z "$emptyCheck" ]; then break; fi
 		app_table=$($HTMLQ --text --ignore-whitespace <<<"$node")
 		if [ "$(sed -n 3p <<<"$app_table")" != "$apk_bundle" ]; then continue; fi
+		# exact version name, e.g. 18.5.4.993608717-release-arm64-v8a and not the -beta- variant of the same page
+		if [ -n "$want_ver" ] && [ "$(sed -n 2p <<<"$app_table" | xargs)" != "$want_ver" ]; then continue; fi
 		dlurl=$($HTMLQ --base https://www.apkmirror.com --attribute href "div:nth-child(1) > a:nth-child(1)" <<<"$node")
 		if isoneof "$(sed -n 6p <<<"$app_table")" "${appdpi[@]}" &&
 			isoneof "$(sed -n 4p <<<"$app_table")" "${apparch[@]}"; then
@@ -476,13 +481,18 @@ dl_apkmirror() {
 	local resp node app_table apkmname dlurl=""
 	apkmname=$($HTMLQ "h1.marginZero" --text <<<"$__APKMIRROR_RESP__")
 	apkmname="${apkmname,,}" apkmname="${apkmname// /-}" apkmname="${apkmname//[^a-z0-9-]/}"
-	url="${url}/${apkmname}-${version//./-}-release/"
+	# version names like 18.5.4.993608717-release-arm64-v8a (Gboard) have pages without the suffix
+	local url_ver=${version%%-release*}
+	url="${url}/${apkmname}-${url_ver//./-}-release/"
 	resp=$(req "$url" -) || return 1
 	node=$($HTMLQ "div.table-row.headerFont:nth-last-child(1)" -r "span:nth-child(n+3)" <<<"$resp")
 	if [ "$node" ]; then
-		for type in APK BUNDLE; do
-			if dlurl=$(apkmirror_search "$resp" "$dpi" "$arch" "$type"); then
-				if [ "$type" = "BUNDLE" ]; then
+		for type in APK BUNDLE APK_ANY BUNDLE_ANY; do
+			# first pass: exact version name match, second pass: any variant of the page
+			local want=$2
+			if [ "${type%_ANY}" != "$type" ]; then want=""; fi
+			if dlurl=$(apkmirror_search "$resp" "$dpi" "$arch" "${type%_ANY}" "$want"); then
+				if [ "${type%_ANY}" = "BUNDLE" ]; then
 					is_bundle=true
 				else is_bundle=false; fi
 				break 2
@@ -678,10 +688,27 @@ patch_apk() {
 	local cmd_log=${cmd//"$ks_pass"/***}
 	cmd_log=${cmd_log//"$ks_key_pass"/***}
 	pr "$cmd_log"
-	if eval "$cmd"; then [ -f "$patched_apk" ]; else
-		rm "$patched_apk" 2>/dev/null || :
+	local plog="${tmp_files}.log"
+	if ! (set -o pipefail; eval "$cmd" 2>&1 | tee "$plog"); then
+		rm "$patched_apk" "$plog" 2>/dev/null || :
 		return 1
 	fi
+	# safety net: the stock apk must be exactly the version the patches were chosen for
+	# (e.g. not the -beta- variant of the same APKMirror page), and at least one patch must be applied
+	local got
+	got=$(sed -n "s/.*incompatible with ${pkg_name-} \(.*\)\$/\1/p" "$plog" | head -1)
+	if [ -n "${version-}" ] && [ -n "$got" ] && [ "$got" != "${version}" ]; then
+		epr "Stock apk is version '$got', but the patches need '${version}'. Not using it."
+		rm -f "$patched_apk" "$plog"
+		return 1
+	fi
+	if ! grep -q "Applied: " "$plog"; then
+		epr "No patch was applied to '$stock_input'"
+		rm -f "$patched_apk" "$plog"
+		return 1
+	fi
+	rm -f "$plog"
+	[ -f "$patched_apk" ]
 }
 
 check_sig() {

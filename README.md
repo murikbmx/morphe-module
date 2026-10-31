@@ -7,6 +7,8 @@ Magisk / KernelSU / APatch modules and non-root APKs (arm64-v8a) for:
   plus Google/other and Yandex voice-over translation in one bundle.
 - **Google Photos** patched with [**De-Vanced**](https://github.com/RookieEnough/De-Vanced) (Morphe based):
   Pixel spoofing for unlimited storage, MicroG support for the non-root APK.
+- **Gboard** (non-root APK only) patched with [**Gboard-patches**](https://github.com/jasonwu1994/Gboard-patches) (Morphe based):
+  installs next to the original Gboard as "GboardWu" (`Package Rename`).
 
 Get the [latest release](../../releases).
 
@@ -24,7 +26,7 @@ Get the [latest release](../../releases).
   - action button in the root manager to enable/disable mounting
 
 Non-root APKs: install [MicroG-RE](https://github.com/MorpheApp/MicroG-RE/releases) first, then `youtube-dualvot-v*.apk`
-and/or `googlephotos-devanced-v*.apk` from the release. They install next to the original apps (different package names), no root needed.
+and/or `googlephotos-devanced-v*.apk` from the release (`gboard-wu-v*.apk` doesn't need MicroG). They install next to the original apps (different package names), no root needed.
 
 Use [zygisk-detach](https://github.com/j-hc/zygisk-detach) to detach YouTube from the Play Store.
 If you see "Reflash needed" after reboots, try [rvmm-zygisk-mount](https://github.com/j-hc/rvmm-zygisk-mount).
@@ -79,3 +81,8 @@ Output goes to `build/`. Local builds don't embed `updateJson`.
 ## Credits
 Based on [revanced-magisk-module](https://github.com/j-hc/revanced-magisk-module) by j-hc.
 Patches by [sashade8-ship-it/dual-vot-patches](https://github.com/sashade8-ship-it/dual-vot-patches) and [MorpheApp](https://github.com/MorpheApp/morphe-patches).
+
+## Updates for non-root APKs
+Use [Obtainium](https://github.com/ImranR98/Obtainium): add this repository and set "Filter APKs by regular expression"
+per app: `youtube-dualvot-v.*\.apk`, `googlephotos-devanced-v.*\.apk`, `gboard-wu-v.*\.apk`.
+Every release contains all apps, so let Obtainium take the version from the APK, not from the release tag.
