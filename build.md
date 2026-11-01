@@ -4,6 +4,8 @@ YouTube: 21.30.216
 Default Morphe settings for YouTube:  
 - morphe_video_quality_default_wifi = 1080
 - morphe_shorts_quality_default_wifi = 1080
+- morphe_hide_end_screen_cards = true
+- morphe_hide_end_screen_suggested_video = true
 - morphe_header_logo = PREMIUM
 - morphe_shorts_autoplay = true  
 
