@@ -339,8 +339,20 @@ semver_validate() {
 	local ac="${a//[.0-9]/}"
 	[ ${#ac} = 0 ]
 }
+# versions that end with an architecture (18.5.1.993608717-lite_beta-arm64-v8a): keep only the ones for $1
+# (arm64-v8a, arm-v7a, x86, x86_64), versions without an architecture suffix are always kept
+filter_arch_vers() {
+	local want=$1 v
+	if [ "$want" = arm-v7a ]; then want=armeabi-v7a; fi
+	while IFS= read -r v; do
+		if [[ $v =~ -(arm64-v8a|armeabi-v7a|x86|x86_64)$ ]] && { [ -z "$want" ] || [ "$want" = all ] || [ "${BASH_REMATCH[1]}" = "$want" ]; } ||
+			! [[ $v =~ -(arm64-v8a|armeabi-v7a|x86|x86_64)$ ]]; then
+			echo "$v"
+		fi
+	done
+}
 get_patch_last_supported_ver() {
-	local list_patches=$1 pkg_name=$2 inc_sel=$3 is_experimental=$4
+	local list_patches=$1 pkg_name=$2 inc_sel=$3 is_experimental=$4 arch=${5-}
 	# _exc_sel=$4 _exclusive=$5
 	local op
 	if [ "$inc_sel" ]; then
@@ -367,7 +379,13 @@ get_patch_last_supported_ver() {
 	elif [ "$op" = "Any" ]; then
 		return
 	fi
-	get_highest_ver <<<"$op" || return 1
+	local op_arch
+	op_arch=$(filter_arch_vers "$arch" <<<"$op")
+	if [ -z "$op_arch" ]; then
+		epr "No version for architecture '$arch' in: $(paste -sd ' ' <<<"$op")"
+		return 1
+	fi
+	get_highest_ver <<<"$op_arch" || return 1
 }
 
 patches_list_versions() {
@@ -837,7 +855,7 @@ build_rv() {
 	if isoneof "$version_mode" "auto" "experimental"; then
 		# pick the version from the whole patches bundle (list-versions), not only from included patches,
 		# so the stock app always matches what the patches require
-		if ! version=$(get_patch_last_supported_ver "$list_patches" "$pkg_name" "" "$is_experimental"); then
+		if ! version=$(get_patch_last_supported_ver "$list_patches" "$pkg_name" "" "$is_experimental" "$arch"); then
 			epr "get_patch_last_supported_ver failed '$list_patches'"
 			report_skip "$table" "не удалось определить, какая версия ${pkg_name} нужна патчам."
 			return
@@ -877,7 +895,7 @@ build_rv() {
 	version_f=${version_f#v}
 	# "<version>-<arch>" for file names; versions like 18.5.4.993608717-release-arm64-v8a already end with the arch
 	local ver_arch="${version_f}-${arch_f}"
-	if [[ $version_f == *"-${arch_f}" ]]; then ver_arch=$version_f; fi
+	if [[ $version_f == *"-${arch_f}" ]] || { [ "$arch_f" = arm-v7a ] && [[ $version_f == *-armeabi-v7a ]]; }; then ver_arch=$version_f; fi
 	local stock_apk="${TEMP_DIR}/${pkg_name}-${ver_arch}.apk" stock_from=""
 	if [ ! -f "$stock_apk" ]; then
 		for dl_p in "${DL_SRCS[@]}"; do
