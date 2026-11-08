@@ -184,9 +184,12 @@ jobs:
           fi
           gh release upload stock-apks "${FILES[@]}" --clobber
 
-          # keep only the newest KEEP_VERSIONS versions of every package
+          # keep only the newest KEEP_VERSIONS versions of every package and build variant
+          # (Gboard "...-release-arm64-v8a" and Gboard Lite "...-lite_beta-arm64-v8a" share the package)
           gh release view stock-apks --json assets -q '.assets[].name' | while read -r N; do
-            P=${N%%-*}; R=${N#*-}; V=${R%%-*}; echo "$P $V $N"
+            P=${N%%-*}; R=${N#*-}; V=${R%%-*}
+            VAR=$(sed -E 's/\.(apk|apkm)$//; s/-(all|arm64-v8a|arm-v7a|x86|x86_64)$//' <<<"${R#"$V"}")
+            echo "${P}${VAR} $V $N"
           done | sort -k1,1 -k2,2Vr | awk -v keep="$KEEP_VERSIONS" '{ if ($1 != p) { p = $1; n = 0; last = "" } if ($2 != last) { n++; last = $2 } if (n > keep) print $3 }' |
             while read -r OLD; do
               echo "Deleting old stock $OLD"
@@ -226,7 +229,7 @@ jobs:
         id: title
         run: |
           # "App: version" lines of the build log, e.g. "YouTube 21.30.216 · GooglePhotos 7.92.0.977185651"
-          APPS=$(sed -n 's/^\([A-Za-z][A-Za-z0-9 ()-]*\): \([0-9][^ ]*\)  *$/\1 \2/p' out/build.md | sed 's/GooglePhotos/Google Photos/' | paste -sd '|' - | sed 's/|/ · /g')
+          APPS=$(sed -n 's/^\([A-Za-z][A-Za-z0-9 ()-]*\): \([0-9][^ ]*\)  *$/\1 \2/p' out/build.md | sed 's/GooglePhotos/Google Photos/; s/GboardLite/Gboard Lite/' | paste -sd '|' - | sed 's/|/ · /g')
           VOT_VER=$(sed -n 's|^Patches: sashade8-ship-it/dual-vot-patches/patches-\(.*\)\.[^.]*  *$|\1|p' out/build.md | head -1)
           TITLE="${APPS:-Release}"
           if [ -n "$VOT_VER" ]; then TITLE+=" · Dual VoT ${VOT_VER}"; fi

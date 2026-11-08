@@ -493,8 +493,11 @@ dl_apkmirror() {
 	local resp node app_table apkmname dlurl=""
 	apkmname=$($HTMLQ "h1.marginZero" --text <<<"$__APKMIRROR_RESP__")
 	apkmname="${apkmname,,}" apkmname="${apkmname// /-}" apkmname="${apkmname//[^a-z0-9-]/}"
-	# version names like 18.5.4.993608717-release-arm64-v8a (Gboard) have pages without the suffix
-	local url_ver=${version%%-release*}
+	# "Gboard - the Google Keyboard" -> gboard-the-google-keyboard
+	while [[ $apkmname == *--* ]]; do apkmname=${apkmname//--/-}; done
+	# version names like 18.5.4.993608717-release-arm64-v8a (Gboard) or 18.5.1.993608717-lite_beta-arm64-v8a
+	# (Gboard Lite) have pages without the suffix: ".../gboard-the-google-keyboard-18-5-1-993608717-release/"
+	local url_ver=${version%%-*}
 	url="${url}/${apkmname}-${url_ver//./-}-release/"
 	resp=$(req "$url" -) || return 1
 	node=$($HTMLQ "div.table-row.headerFont:nth-last-child(1)" -r "span:nth-child(n+3)" <<<"$resp")

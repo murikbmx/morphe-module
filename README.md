@@ -9,6 +9,12 @@ Magisk / KernelSU / APatch modules and non-root APKs (arm64-v8a) for:
   Pixel spoofing for unlimited storage, MicroG support for the non-root APK.
 - **Gboard** (non-root APK only) patched with [**Gboard-patches**](https://github.com/jasonwu1994/Gboard-patches) (Morphe based):
   installs next to the original Gboard as "GboardWu" (`Package Rename`).
+- **Gboard Lite** (non-root APK only) patched with [**kveld-morphe-patches**](https://github.com/kveld9/kveld-morphe-patches) (Morphe based):
+  trackers, remote flags and cloud backup off, extra keyboard settings; installs next to the original Gboard (`Install a Copy`).
+  The patches support exactly one build: Gboard Lite `18.5.1.993608717-lite_beta` (arm64-v8a, standalone APK).
+  It is not on archive.org/APKPure, so upload it once to the `stock-apks` release as
+  `com.google.android.inputmethod.latin-18.5.1.993608717-lite_beta-arm64-v8a.apk`
+  (from [APKMirror](https://www.apkmirror.com/apk/google-inc/gboard/gboard-the-google-keyboard-18-5-1-993608717-release/), the `lite_beta-arm64-v8a` variant).
 
 Get the [latest release](../../releases).
 
@@ -26,7 +32,7 @@ Get the [latest release](../../releases).
   - action button in the root manager to enable/disable mounting
 
 Non-root APKs: install [MicroG-RE](https://github.com/MorpheApp/MicroG-RE/releases) first, then `youtube-dualvot-v*.apk`
-and/or `googlephotos-devanced-v*.apk` from the release (`gboard-wu-v*.apk` doesn't need MicroG). They install next to the original apps (different package names), no root needed.
+and/or `googlephotos-devanced-v*.apk` from the release (`gboard-wu-v*.apk` and `gboard-lite-kveld-v*.apk` don't need MicroG). They install next to the original apps (different package names), no root needed.
 
 Use [zygisk-detach](https://github.com/j-hc/zygisk-detach) to detach YouTube from the Play Store.
 If you see "Reflash needed" after reboots, try [rvmm-zygisk-mount](https://github.com/j-hc/rvmm-zygisk-mount).
@@ -84,5 +90,5 @@ Patches by [sashade8-ship-it/dual-vot-patches](https://github.com/sashade8-ship-
 
 ## Updates for non-root APKs
 Use [Obtainium](https://github.com/ImranR98/Obtainium): add this repository and set "Filter APKs by regular expression"
-per app: `youtube-dualvot-v.*\.apk`, `googlephotos-devanced-v.*\.apk`, `gboard-wu-v.*\.apk`.
+per app: `youtube-dualvot-v.*\.apk`, `googlephotos-devanced-v.*\.apk`, `gboard-wu-v.*\.apk`, `gboard-lite-kveld-v.*\.apk`.
 Every release contains all apps, so let Obtainium take the version from the APK, not from the release tag.

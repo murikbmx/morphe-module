@@ -73,3 +73,20 @@ arch = "arm64-v8a"
 version = "auto"
 archive-dlurl = "https://archive.org/download/jhc-apks/apks/com.google.android.inputmethod.latin"
 apkmirror-dlurl = "https://www.apkmirror.com/apk/google-inc/gboard"
+
+# Gboard Lite with kveld9/kveld-morphe-patches (Morphe based). Non-root APK only.
+# The patches pin one Gboard Lite beta build (18.5.1.993608717-lite_beta), "version = auto" picks it.
+# "Install a Copy" (on by default) installs it next to the original Gboard (package suffix ".clone").
+# The lite beta is usually not on archive.org/APKPure: upload it to the 'stock-apks' release by hand once, as
+# com.google.android.inputmethod.latin-18.5.1.993608717-lite_beta-arm64-v8a.apk
+# https://github.com/kveld9/kveld-morphe-patches
+[GboardLite]
+app-name = "Gboard Lite"
+pkg-name = "com.google.android.inputmethod.latin"
+patches-source = "kveld9/kveld-morphe-patches"
+patches-version = "latest"
+rv-brand = "Kveld"
+build-mode = "apk"
+arch = "arm64-v8a"
+version = "auto"
+apkmirror-dlurl = "https://www.apkmirror.com/apk/google-inc/gboard"
