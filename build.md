@@ -1,6 +1,5 @@
 Gboard: 18.5.4.993608717-release-arm64-v8a  
-⚠️ GboardLite не собран: не удалось скачать оригинал. Нужна версия **18.5.1.993608717-lite_beta-armeabi-v7a** (arm64-v8a).  
-Скачайте её, например, с https://www.apkmirror.com/apk/google-inc/gboard и загрузите в релиз 'stock-apks' с именем `com.google.android.inputmethod.latin-18.5.1.993608717-lite_beta-armeabi-v7a-arm64-v8a.apk` (или `.apkm` для split-архива), затем запустите сборку снова.  
+GboardLite: 18.5.1.993608717-lite_beta-arm64-v8a  
 GooglePhotos: 7.92.0.977185651  
 YouTube: 21.30.216  
 Default Morphe settings for YouTube:  
