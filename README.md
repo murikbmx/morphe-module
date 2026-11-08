@@ -15,6 +15,11 @@ Magisk / KernelSU / APatch modules and non-root APKs (arm64-v8a) for:
   It is not on archive.org/APKPure, so upload it once to the `stock-apks` release as
   `com.google.android.inputmethod.latin-18.5.1.993608717-lite_beta-arm64-v8a.apk`
   (from [APKMirror](https://www.apkmirror.com/apk/google-inc/gboard/gboard-the-google-keyboard-18-5-1-993608717-release/), the `lite_beta-arm64-v8a` variant).
+- **Proton VPN** (non-root APK only) patched with [**hxreborn/morphe-patches**](https://github.com/hxreborn/morphe-patches) (Morphe based):
+  free plan unlocks (NetShield, split tunneling, custom DNS, LAN, profiles), no server change delay, no telemetry and promotions,
+  AMOLED theme. Same package name as the original app: uninstall the original first.
+  Not on archive.org/APKPure, so upload the stock bundle the patches need to the `stock-apks` release as
+  `ch.protonvpn.android-<version>-arm64-v8a.apkm` (e.g. `ch.protonvpn.android-5.21.9.0-arm64-v8a.apkm`).
 
 Get the [latest release](../../releases).
 
@@ -32,7 +37,7 @@ Get the [latest release](../../releases).
   - action button in the root manager to enable/disable mounting
 
 Non-root APKs: install [MicroG-RE](https://github.com/MorpheApp/MicroG-RE/releases) first, then `youtube-dualvot-v*.apk`
-and/or `googlephotos-devanced-v*.apk` from the release (`gboard-wu-v*.apk` and `gboard-lite-kveld-v*.apk` don't need MicroG). They install next to the original apps (different package names), no root needed.
+and/or `googlephotos-devanced-v*.apk` from the release (`gboard-wu-v*.apk`, `gboard-lite-kveld-v*.apk` and `proton-vpn-hxreborn-v*.apk` don't need MicroG). They install next to the original apps (different package names), no root needed.
 
 Use [zygisk-detach](https://github.com/j-hc/zygisk-detach) to detach YouTube from the Play Store.
 If you see "Reflash needed" after reboots, try [rvmm-zygisk-mount](https://github.com/j-hc/rvmm-zygisk-mount).
@@ -90,5 +95,5 @@ Patches by [sashade8-ship-it/dual-vot-patches](https://github.com/sashade8-ship-
 
 ## Updates for non-root APKs
 Use [Obtainium](https://github.com/ImranR98/Obtainium): add this repository and set "Filter APKs by regular expression"
-per app: `youtube-dualvot-v.*\.apk`, `googlephotos-devanced-v.*\.apk`, `gboard-wu-v.*\.apk`, `gboard-lite-kveld-v.*\.apk`.
+per app: `youtube-dualvot-v.*\.apk`, `googlephotos-devanced-v.*\.apk`, `gboard-wu-v.*\.apk`, `gboard-lite-kveld-v.*\.apk`, `proton-vpn-hxreborn-v.*\.apk`.
 Every release contains all apps, so let Obtainium take the version from the APK, not from the release tag.

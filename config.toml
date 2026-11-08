@@ -90,3 +90,21 @@ build-mode = "apk"
 arch = "arm64-v8a"
 version = "auto"
 apkmirror-dlurl = "https://www.apkmirror.com/apk/google-inc/gboard"
+
+# Proton VPN with hxreborn/morphe-patches (Morphe based). Non-root APK only, no MicroG needed.
+# Unlocks free plan features (NetShield, split tunneling, custom DNS, LAN, profiles, connection preferences),
+# no server change delay, no telemetry and upgrade promotions, AMOLED theme.
+# Same package name as the original: uninstall the original Proton VPN before installing.
+# Not on archive.org/APKPure: upload the stock bundle to the 'stock-apks' release by hand, as
+# ch.protonvpn.android-<version>-arm64-v8a.apkm (or .apk)
+# https://github.com/hxreborn/morphe-patches
+[ProtonVPN]
+app-name = "Proton VPN"
+pkg-name = "ch.protonvpn.android"
+patches-source = "hxreborn/morphe-patches"
+patches-version = "latest"
+rv-brand = "hxreborn"
+build-mode = "apk"
+arch = "arm64-v8a"
+version = "auto"
+apkmirror-dlurl = "https://www.apkmirror.com/apk/proton-technologies-ag/protonvpn-secure-and-free-vpn"
