@@ -2,4 +2,4 @@ GboardLite|kveld9/kveld-morphe-patches/patches-2.10.1.mpp
 Gboard|jasonwu1994/Gboard-patches/patches-4.2.0.mpp
 GooglePhotos|RookieEnough/De-Vanced/patches-1.6.4.mpp
 ProtonVPN|hxreborn/morphe-patches/patches-1.76.0.mpp
-YouTube|sashade8-ship-it/dual-vot-patches/patches-2.1.0-dualvot.8.5.4.mpp
+YouTube|sashade8-ship-it/dual-vot-patches/patches-2.2.0-dualvot.8.5.4.mpp
