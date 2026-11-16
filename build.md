@@ -1,4 +1,8 @@
+⚠️ GboardLite не собран: не удалось скачать оригинал. Нужна версия **18.6.3.1002251336-lite_release-arm64-v8a** (arm64-v8a).  
+Скачайте её, например, с https://www.apkmirror.com/apk/google-inc/gboard и загрузите в релиз 'stock-apks' с именем `com.google.android.inputmethod.latin-18.6.3.1002251336-lite_release-arm64-v8a.apk` (или `.apkm` для split-архива), затем запустите сборку снова.  
 ProtonVPN: 5.21.9.0  
+YouTube: 21.30.216  
+⚠️ **YouTube не собран:** не удалось применить настройки по умолчанию (settings-defaults): вероятно, в новых патчах изменились названия настроек.  
 
 Non-root APK requires [MicroG-RE 7.3.1](https://github.com/MorpheApp/MicroG-RE/releases/tag/7.3.1)  
 MicroG-RE for arm64-v8a: [microg-7.3.1-icon-arm64-v8a.apk](https://github.com/MorpheApp/MicroG-RE/releases/download/7.3.1/microg-7.3.1-icon-arm64-v8a.apk)  
@@ -7,57 +11,248 @@ Use [zygisk-detach](https://github.com/j-hc/zygisk-detach) to detach the YouTube
 Patches: [dual-vot-patches](https://github.com/sashade8-ship-it/dual-vot-patches)  
 Builder: [morphe-module](https://github.com/murikbmx/morphe-module), based on [revanced-magisk-module](https://github.com/j-hc/revanced-magisk-module)
   
-Patches: hxreborn/morphe-patches/patches-1.79.0.mpp  
-[Changelog](https://github.com/hxreborn/morphe-patches/releases/tag/v1.79.0)
+Patches: hxreborn/morphe-patches/patches-1.80.0.mpp  
+[Changelog](https://github.com/hxreborn/morphe-patches/releases/tag/v1.80.0)
 
-<details><summary>Patches release notes (v1.79.0)</summary>
+<details><summary>Patches release notes (v1.80.0)</summary>
 
-## [1.79.0](https://github.com/hxreborn/morphe-patches/compare/v1.78.1...v1.79.0) (2026-11-15)
+## [1.80.0](https://github.com/hxreborn/morphe-patches/compare/v1.79.0...v1.80.0) (2026-11-16)
 
 ### Bug Fixes
 
-* **Candy Crush Saga - Disable notifications:** remove permission prompts ([892a63e](https://github.com/hxreborn/morphe-patches/commit/892a63e27d86f428cb5bc1d75da7c64cc3371e82))
-* **Candy Crush Saga - Disable tracking:** stop attribution collection ([9390c55](https://github.com/hxreborn/morphe-patches/commit/9390c557063934a2349a41b48ff00b96129ebb9c))
-* **Candy Crush Saga - Remove offer pop-ups:** skip oversized offer edits ([872f262](https://github.com/hxreborn/morphe-patches/commit/872f26299a7b20fb6b94d33fcda208181c616c16))
-* **Proton VPN:** remove Frosted glass ([cc7a5ff](https://github.com/hxreborn/morphe-patches/commit/cc7a5ff7b98e1a87fd3a4665474ba99dd990c169)), closes [#713](https://github.com/hxreborn/morphe-patches/issues/713) [#765](https://github.com/hxreborn/morphe-patches/issues/765)
-* **RedReader - Fix login:** add missing sign-in setup ([2797ec8](https://github.com/hxreborn/morphe-patches/commit/2797ec858f15f01f46b510b299ec57465f8238b5))
-* **ULTIMEA - Fine equalizer:** follow accent color ([de85aa2](https://github.com/hxreborn/morphe-patches/commit/de85aa2bf4e6ce5a76d88ce89bde61887f9c404f))
+* **Quranify - Unlock premium:** load reciters after server change ([085c9bc](https://github.com/hxreborn/morphe-patches/commit/085c9bc6196200901ac87f0f27ff72426c37c520))
 
 ### New Features
 
-* **ArduinoDroid - Unlock premium:** remove ads and flashing limits ([5b3b557](https://github.com/hxreborn/morphe-patches/commit/5b3b5572080a56344381274a361a79925cb66ef1)), closes [#768](https://github.com/hxreborn/morphe-patches/issues/768)
-* **Candy Crush Soda Saga - Add boosters:** grant 1,000 of each on start ([ef43485](https://github.com/hxreborn/morphe-patches/commit/ef43485c46331e2695d0f96396409988fc87999a))
-* **Candy Crush Soda Saga - Add extra moves:** give five more moves ([4233adf](https://github.com/hxreborn/morphe-patches/commit/4233adf670ee01dfa24cbabfa629db9f7148d402))
-* **Candy Crush Soda Saga - Disable events:** remove event entries ([3573938](https://github.com/hxreborn/morphe-patches/commit/3573938f9a314ac1d670a27dd2804a75f4e0f947))
-* **Candy Crush Soda Saga - Disable notifications:** stop reminders ([fb4b072](https://github.com/hxreborn/morphe-patches/commit/fb4b0722cc9699e7f248cf3eb2f29eb75718c2d9))
-* **Candy Crush Soda Saga - Disable tracking:** stop data collection ([5bfc691](https://github.com/hxreborn/morphe-patches/commit/5bfc69128e80d811ce2bb407f204ca26b6402213))
-* **Candy Crush Soda Saga - Hide ads:** stop ad networks from loading ([a5ef863](https://github.com/hxreborn/morphe-patches/commit/a5ef8634ca281df7f4374ebe51794f1bda612f74))
-* **Candy Crush Soda Saga - Parked app for Android Auto:** add car entry ([766859d](https://github.com/hxreborn/morphe-patches/commit/766859d909b5798a20783ef16f94c51e0ec80eff))
-* **Candy Crush Soda Saga - Remove ad offers:** drop watch-ad offers ([479162c](https://github.com/hxreborn/morphe-patches/commit/479162c8029b55b707e2ff991ec0f1a2fb161125))
-* **Candy Crush Soda Saga - Remove offer pop-ups:** block promotions ([a65fb1e](https://github.com/hxreborn/morphe-patches/commit/a65fb1e111f9978ddd700b9e23ced7b600106cac))
-* **Candy Crush Soda Saga - Remove rating prompts:** stop rate requests ([199169d](https://github.com/hxreborn/morphe-patches/commit/199169d046e6366c88e53a34ca3034f33cb23765))
-* **Candy Crush Soda Saga - Unlimited lives:** add 24 hours on start ([4d643aa](https://github.com/hxreborn/morphe-patches/commit/4d643aa0a4e7ddd8beb5f9a843a779658442a15d))
-* **Candy Crush Soda Saga - Unlock booster slots:** remove level limits ([78a5876](https://github.com/hxreborn/morphe-patches/commit/78a5876c27b4db3992198d8dc50371fa0926145c))
-* **ClassDojo - Unlock progress reports:** show detailed statistics ([04101bb](https://github.com/hxreborn/morphe-patches/commit/04101bb8bb01358d5b09922be6d1faa7a868d663))
-* **iLovePDF - GmsCore support:** enable Google sign-in and Drive ([f143aeb](https://github.com/hxreborn/morphe-patches/commit/f143aeb341d505019e26ba80a194c8ab51be7026))
-* **iLovePDF - Unlock premium:** enable premium PDF tools ([95fbf93](https://github.com/hxreborn/morphe-patches/commit/95fbf93bc1f563f3017d46037f0df1c9e723217b))
-* **TradingView - Skip sign-up screen:** open app without signing in ([e937c99](https://github.com/hxreborn/morphe-patches/commit/e937c99699c158aea33d7627c6b00d60af7b8c5e)), closes [#748](https://github.com/hxreborn/morphe-patches/issues/748)
-* **TradingView - Unlock chart features:** add Renko and Kagi charts ([5de4898](https://github.com/hxreborn/morphe-patches/commit/5de4898c82436c3626a7192efe8c3f2b8f70bcf1)), closes [#748](https://github.com/hxreborn/morphe-patches/issues/748)
-* **ULTIMEA - Fine equalizer:** move editor into equalizer screen ([25f51b6](https://github.com/hxreborn/morphe-patches/commit/25f51b6166aeb7b388980e079bf1f2d93a4b243b))
+* **BitTorrent - Unlock premium:** enable Pro features and remove ads ([666af2c](https://github.com/hxreborn/morphe-patches/commit/666af2cb9da24394c57e04bcb98360b71b2974aa))
+* **SHTTPS Marketless - Unlock PLUS:** enable remote screen control ([15b8063](https://github.com/hxreborn/morphe-patches/commit/15b806359252c01ff67fbe500cad86028ccc11d8))
+* **µTorrent - AMOLED dark theme:** make page backgrounds black ([a6c8028](https://github.com/hxreborn/morphe-patches/commit/a6c80289d6498a824a4938fc7119ca897e5d9386))
+* **µTorrent - Unlock premium:** enable Pro features and remove ads ([05c9dbd](https://github.com/hxreborn/morphe-patches/commit/05c9dbddffe4b9ee15a860b4fceb993637d5e1bc))
 
 ### Updated App Support
 
-* **MyScript Notes:** add support for `7.4.9` ([bebe15c](https://github.com/hxreborn/morphe-patches/commit/bebe15c8be6f0b5f381ad7b7ce9ca3d8441a85dd)), closes [#769](https://github.com/hxreborn/morphe-patches/issues/769)
+* **Arc Player:** add support for `1.5.0.145` ([8885cf0](https://github.com/hxreborn/morphe-patches/commit/8885cf069c1ac0d061c65af7dacc806f95c1ad7c)), closes [#790](https://github.com/hxreborn/morphe-patches/issues/790)
+* **AtloMaps:** add support for `2.0.3` ([7a058ae](https://github.com/hxreborn/morphe-patches/commit/7a058ae7aeb72b9267086ad5e72c7e0bfb9fd275)), closes [#792](https://github.com/hxreborn/morphe-patches/issues/792)
+* **Audible:** add support for `26.45.08` ([2988812](https://github.com/hxreborn/morphe-patches/commit/29888120931a26d123b292b7732bf205860af76c)), closes [#793](https://github.com/hxreborn/morphe-patches/issues/793)
+* **Biwenger:** add support for `4.0.5` ([088a88d](https://github.com/hxreborn/morphe-patches/commit/088a88df9d82ac1a0a4c50fa973a0deb8db440e0)), closes [#799](https://github.com/hxreborn/morphe-patches/issues/799)
+* **botim:** add support for `4.21.1` ([429cfec](https://github.com/hxreborn/morphe-patches/commit/429cfec467928991ee10e9ad6a6a4c1d30c83d34)), closes [#801](https://github.com/hxreborn/morphe-patches/issues/801)
+* **Clink:** add support for `2.0.2` ([620c258](https://github.com/hxreborn/morphe-patches/commit/620c2587db3abe2f59850d742dcb3eb3927c242a)), closes [#803](https://github.com/hxreborn/morphe-patches/issues/803)
+* **Clone App:** add support for `4.2.5` ([70d2801](https://github.com/hxreborn/morphe-patches/commit/70d28015328fdc331ad49f67efc1c26b427a310d)), closes [#804](https://github.com/hxreborn/morphe-patches/issues/804)
+* **Desh Telugu Keyboard:** add support for `17.7.3` ([afd9c95](https://github.com/hxreborn/morphe-patches/commit/afd9c95fb9f8036af41c8b7dea53952d70ea73d0)), closes [#806](https://github.com/hxreborn/morphe-patches/issues/806)
+* **Echo Equalizer:** add support for `10.0` ([d326614](https://github.com/hxreborn/morphe-patches/commit/d3266143feb32a75b49b4ab1c219ae6c3e974715)), closes [#809](https://github.com/hxreborn/morphe-patches/issues/809)
+* **Fast STL Viewer:** add support for `2.95` ([6961c4c](https://github.com/hxreborn/morphe-patches/commit/6961c4c2bb62fa89cb9d5c307887b0b03cdccd20)), closes [#811](https://github.com/hxreborn/morphe-patches/issues/811)
+* **ForusApp:** add support for `3.0.20` ([481d25a](https://github.com/hxreborn/morphe-patches/commit/481d25adbdd4d5666f7ca813976da497582804fd)), closes [#812](https://github.com/hxreborn/morphe-patches/issues/812)
+* **Ground News:** add support for `5.1.0` ([e2c0e3a](https://github.com/hxreborn/morphe-patches/commit/e2c0e3a1a66854e0576eb8b781d3d98209c820c8)), closes [#813](https://github.com/hxreborn/morphe-patches/issues/813)
+* **Joyn Austria:** add support for `6.9.2-AOS-JOYN_AT-2282180` ([e99d618](https://github.com/hxreborn/morphe-patches/commit/e99d618624eb8e1219ff9b6a05ce4b6ac248d0c9)), closes [#817](https://github.com/hxreborn/morphe-patches/issues/817)
+* **Liftoff:** add support for `2.18.0` ([1aae904](https://github.com/hxreborn/morphe-patches/commit/1aae9049006b2eaf0207d6ef0de8599c9a35d318)), closes [#818](https://github.com/hxreborn/morphe-patches/issues/818)
+* **Magic Earth:** add support for `7.1.26.42.F9918E5E.7B9203C7B` ([ab8a945](https://github.com/hxreborn/morphe-patches/commit/ab8a945043a853c91bb50d8c6098f4d91bb42c8f)), closes [#820](https://github.com/hxreborn/morphe-patches/issues/820)
+* **MangaTime:** add support for `1.25.3` ([8912d04](https://github.com/hxreborn/morphe-patches/commit/8912d04748295555e34d6ac5681533f9487c5114)), closes [#821](https://github.com/hxreborn/morphe-patches/issues/821)
+* **MBC Shahid:** add support for `8.12.2` ([67cdcb2](https://github.com/hxreborn/morphe-patches/commit/67cdcb221931f59d4d39add2696e4acb8ab94f74)), closes [#822](https://github.com/hxreborn/morphe-patches/issues/822)
+* **Nara Baby:** add support for `2.9.0` ([42e0c62](https://github.com/hxreborn/morphe-patches/commit/42e0c62f5fe8f9b87e765ddd3452f6b146dd7685)), closes [#826](https://github.com/hxreborn/morphe-patches/issues/826)
+* **Notein:** add support for `v2.1.49.0` ([f6ac2e8](https://github.com/hxreborn/morphe-patches/commit/f6ac2e88a595319e7d0342bc2d605b0897451b53)), closes [#827](https://github.com/hxreborn/morphe-patches/issues/827)
+* **One4Home Launcher:** add support for `0.5.190` ([b35ac71](https://github.com/hxreborn/morphe-patches/commit/b35ac71c46fedaed3c3cf4841966b677eed9c5b4)), closes [#829](https://github.com/hxreborn/morphe-patches/issues/829)
+* **Opal:** add support for `4.19.1` ([457bbdf](https://github.com/hxreborn/morphe-patches/commit/457bbdf51a5e094d90188d9d49c4ef7394877d2e)), closes [#830](https://github.com/hxreborn/morphe-patches/issues/830)
+* **Photo Editor Pro:** add support for `1.823.268` ([df225a9](https://github.com/hxreborn/morphe-patches/commit/df225a9834208869a0a62a35ea1da80e83512520)), closes [#834](https://github.com/hxreborn/morphe-patches/issues/834)
+* **Pixlr:** add support for `3.9.4` ([6cec380](https://github.com/hxreborn/morphe-patches/commit/6cec3800d5873bedae6227f79923dae19b105c51)), closes [#835](https://github.com/hxreborn/morphe-patches/issues/835)
+* **Projectivy Launcher:** add support for `4.73` ([729f685](https://github.com/hxreborn/morphe-patches/commit/729f68533df5751f3b794faf96ab13c430827f87)), closes [#837](https://github.com/hxreborn/morphe-patches/issues/837)
+* **QR & Barcode Scanner:** add support for `2.2.229` ([9882359](https://github.com/hxreborn/morphe-patches/commit/9882359e0c61e7bb7e48606b155a8a908e959d0e)), closes [#838](https://github.com/hxreborn/morphe-patches/issues/838)
+* **Quick Cursor:** add support for `3.1.0` ([0dbc4b9](https://github.com/hxreborn/morphe-patches/commit/0dbc4b93491042fe873530fc64196ff8bdb1f4c7)), closes [#839](https://github.com/hxreborn/morphe-patches/issues/839)
+* **Radio Javan:** add support for `11.24.0` ([a763d4a](https://github.com/hxreborn/morphe-patches/commit/a763d4ada07ffe1fb86f6f9d3cd56b19d78759a6)), closes [#841](https://github.com/hxreborn/morphe-patches/issues/841)
 
 </details>
 
-CLI: MorpheApp/morphe-cli/morphe-desktop-2.2.0-all.jar    
+Patches: kveld9/kveld-morphe-patches/patches-2.11.0.mpp  
+[Changelog](https://github.com/kveld9/kveld-morphe-patches/releases/tag/v2.11.0)
+
+<details><summary>Patches release notes (v2.11.0)</summary>
+
+## [2.11.0](https://github.com/kveld9/kveld-morphe-patches/compare/v2.10.1...v2.11.0) (2026-11-16)
+
+### Bug Fixes
+
+* **brave:** bump target version to 1.99.55 ([4f80a76](https://github.com/kveld9/kveld-morphe-patches/commit/4f80a76e2882ff8986e444a6ca0bc79a07c9a3ec))
+* **brave:** cache negative wallpaper resource lookup ([e502bbd](https://github.com/kveld9/kveld-morphe-patches/commit/e502bbd976ad8d5d2812d1538236d27b08e4c813))
+* **brave:** cache reflective ad error constructor ([0e4f644](https://github.com/kveld9/kveld-morphe-patches/commit/0e4f644978a5eeec3097b672010af8a552482d99))
+* **brave:** cache reflective method lookups during tab group close ([37ef233](https://github.com/kveld9/kveld-morphe-patches/commit/37ef233a4e83272f58c2b1bdc8c22f4931ed1d81))
+* **brave:** cache SHA-256 certificate digests during signature check ([dae411b](https://github.com/kveld9/kveld-morphe-patches/commit/dae411b752800c32dd9301adef6bd79b6afd4d17))
+* **brave:** keep ad signup promo suppression working across updates ([47ea8de](https://github.com/kveld9/kveld-morphe-patches/commit/47ea8de4d1aa5ecd11f1306bc66678b198562599))
+* **brave:** keep clean new tab page working across browser updates ([e82daa0](https://github.com/kveld9/kveld-morphe-patches/commit/e82daa0fe612d9fc19bd0bbbc9cb108bc87ff9f2))
+* **brave:** update libchrome tracking server offsets for 1.99.57 ([c62b8de](https://github.com/kveld9/kveld-morphe-patches/commit/c62b8decb5960e6dd12a7818ad77b2de1bfdb68b))
+* **brave:** update native telemetry redirection offsets for 1.99.55 ([cb66f5f](https://github.com/kveld9/kveld-morphe-patches/commit/cb66f5f8303923c62bbfe750ec05d9fe448cfee2))
+* **brave:** update obfuscated origin preferences hooks for 1.99.55 ([2c2c8f8](https://github.com/kveld9/kveld-morphe-patches/commit/2c2c8f8c5537ed464e938948f091c66795f89a09))
+* **brave:** update supported version to 1.99.56 ([a8fdfd4](https://github.com/kveld9/kveld-morphe-patches/commit/a8fdfd48396c50b6051ef219f4109493e803f265))
+* **brave:** update supported version to 1.99.57 ([cb7a675](https://github.com/kveld9/kveld-morphe-patches/commit/cb7a67575caa263f5e90a1c677cf3c3b631d419e))
+* **gboard:** AMOLED theme hook for Gboard 18.6.3 ([214a9b8](https://github.com/kveld9/kveld-morphe-patches/commit/214a9b8706c4795236d6165ce97be45b05366df0))
+* **gboard:** Block Trackers hooks for Gboard 18.6.3 ([83be87a](https://github.com/kveld9/kveld-morphe-patches/commit/83be87aa1ca6e3d949e29026e7824237b40581c5))
+* **gboard:** bypass signature validation in SignatureUtils instead of aborting dispatcher ([250d738](https://github.com/kveld9/kveld-morphe-patches/commit/250d738a7a5d7ad5be78a18b0f912e34a7b766f0))
+* **gboard:** Force Incognito hooks for Gboard 18.6.3 ([ef11ccf](https://github.com/kveld9/kveld-morphe-patches/commit/ef11ccf92de8579e0e8fc0cbbfdc054b830b7c4b))
+* **gboard:** keep the raised unpinned clips limit after pinning ([cfe2c53](https://github.com/kveld9/kveld-morphe-patches/commit/cfe2c536ebe293b0abcdea923abe5b6c028ec792)), closes [#205](https://github.com/kveld9/kveld-morphe-patches/issues/205)
+* **gboard:** Keyboard Settings hook for Gboard 18.6.3 ([3072c72](https://github.com/kveld9/kveld-morphe-patches/commit/3072c72cb4f719bb08ea7184a18e611aadd7506a))
+* **gboard:** Offline Only hooks for Gboard 18.6.3 ([380d540](https://github.com/kveld9/kveld-morphe-patches/commit/380d54006f14fec832610c67f84f6acc0c03c56e))
+* **gboard:** prevent frame drops in navigation bar pre-draw listener ([07ddc54](https://github.com/kveld9/kveld-morphe-patches/commit/07ddc544768747c1d650d90e6b0db5d7cda237bc))
+* **gboard:** prune obsolete 5-item array limit replacement in clipboard loader ([3952931](https://github.com/kveld9/kveld-morphe-patches/commit/395293111aa6551f903f8ceea98d4679d436028d))
+* **gboard:** prune obsolete emoji scale experiment flag for 18.6.3 ([228037c](https://github.com/kveld9/kveld-morphe-patches/commit/228037c9ff54866104d513629eeacc8c91c70591))
+* **gboard:** remove residual 100 cap for end-to-end 200 support ([939ec45](https://github.com/kveld9/kveld-morphe-patches/commit/939ec4539f2e273ddc2922ad35838396786b272c)), closes [#205](https://github.com/kveld9/kveld-morphe-patches/issues/205)
+* **gboard:** schedule process restart using exact alarms with fallbacks ([65f4102](https://github.com/kveld9/kveld-morphe-patches/commit/65f41028c6dbbfd07ceda1f56d6ec848b23c93cc))
+* **gboard:** Stop Background Sync hooks for Gboard 18.6.3 ([59b5640](https://github.com/kveld9/kveld-morphe-patches/commit/59b56408c6d696421494f996e14f97e2e41790c7))
+* **gboard:** Stop Remote Updates hooks for Gboard 18.6.3 ([1747a9c](https://github.com/kveld9/kveld-morphe-patches/commit/1747a9cb6504bb5356ac91801eafb67e34a294cc))
+* **gboard:** support Gboard 18.6.3 ([497c0aa](https://github.com/kveld9/kveld-morphe-patches/commit/497c0aaf0b5c5e6ca1504212698868c3fdb916b2))
+* **gboard:** Top Toolbar Item Count hook for Gboard 18.6.3 ([744ff50](https://github.com/kveld9/kveld-morphe-patches/commit/744ff50c0a993ebe6211a99aa60f0fef88d27c6f))
+* **gboard:** Translate character limit hook for Gboard 18.6.3 ([113036d](https://github.com/kveld9/kveld-morphe-patches/commit/113036dfb0e6579ddcbe7ed6c6b528bf8039ed8a))
+* **gboard:** Voice Typing in Incognito hook for Gboard 18.6.3 ([17f331e](https://github.com/kveld9/kveld-morphe-patches/commit/17f331ec884f52ae404d20af9a400ffb97f707c2))
+* **tiktok:** add close button and clear session cookies in Spotify auth dialog ([155d9f8](https://github.com/kveld9/kveld-morphe-patches/commit/155d9f8ec76329c8f7f351c4f584afcebf4eee27))
+* **tiktok:** cache negative resource lookups in video description hider ([4d318be](https://github.com/kveld9/kveld-morphe-patches/commit/4d318be79f0d56189973d0d85c64b186d337da7c))
+* **tiktok:** cache reflective members during video fit layout recalculation ([f033aac](https://github.com/kveld9/kveld-morphe-patches/commit/f033aacf1401d1023b15811cd07de3d588569084))
+* **tiktok:** cache thread-local NumberFormat instances for exact count formatting ([9b5e5cb](https://github.com/kveld9/kveld-morphe-patches/commit/9b5e5cb50afc31cdd553248fb0a12446ce6b8a3b))
+* **tiktok:** consolidate video quality tracking maps into bounded LRU caches ([470d056](https://github.com/kveld9/kveld-morphe-patches/commit/470d0566d27ad59d3434f49043ff5a1bc7763e52))
+* **tiktok:** correct log prefix for author region hook ([0e94d22](https://github.com/kveld9/kveld-morphe-patches/commit/0e94d22901c2a6bb6d0d5796534de905ec909771))
+* **tiktok:** correct log prefix for sensitive warnings hook ([e29932e](https://github.com/kveld9/kveld-morphe-patches/commit/e29932e57d13261ded4a4a3c3def84d71c06d097))
+* **tiktok:** dynamically discover autoplay ability method in search experience customizer ([601ce30](https://github.com/kveld9/kveld-morphe-patches/commit/601ce30b06cd5823038374b91058aaaa9e1d22e5))
+* **tiktok:** filter AI content and paid partnership posts in feed ([2f1965c](https://github.com/kveld9/kveld-morphe-patches/commit/2f1965c9dcf8b4e59754279d988211a876807435))
+* **tiktok:** filter search suggestions using structural properties instead of localized strings ([a904a12](https://github.com/kveld9/kveld-morphe-patches/commit/a904a1277a55031933ccf81b14512168d237cf36))
+* **tiktok:** harden feed interface triggers and assem fingerprints ([07e530c](https://github.com/kveld9/kveld-morphe-patches/commit/07e530c4efa767b2b01cfedeac8bbc46a810c5c1))
+* **tiktok:** harden feed navigation declutter tab manager and provider discovery ([5ae80d4](https://github.com/kveld9/kveld-morphe-patches/commit/5ae80d4ab003dc190161666090dcbbb3a5f82269))
+* **tiktok:** harden typing recommendation panel assem hooks against obfuscation drift ([b831b77](https://github.com/kveld9/kveld-morphe-patches/commit/b831b772dac784286d3598197e382ad3bbabbf52))
+* **tiktok:** hook the current favorite button handler ([e2ba081](https://github.com/kveld9/kveld-morphe-patches/commit/e2ba08118ff455b34b7f38b225ed3a89783f2a12))
+* **tiktok:** hook the current story tray pod provider ([688eaf6](https://github.com/kveld9/kveld-morphe-patches/commit/688eaf60da12cf8aec409831ddd7f3b50c7dd1b2))
+* **tiktok:** include the exact APK link in update issues ([070596c](https://github.com/kveld9/kveld-morphe-patches/commit/070596c1b6fd25458dc152ae955e4caa3b6bd0ff))
+* **tiktok:** keep clear display persistence working across obfuscation updates ([19a3fcf](https://github.com/kveld9/kveld-morphe-patches/commit/19a3fcf527f3fbbfa19ba78688463c43bcde32ff))
+* **tiktok:** keep Google sign-in working across app updates ([e0fdfe4](https://github.com/kveld9/kveld-morphe-patches/commit/e0fdfe4089abfb2f68043112ecd93e9ecf44690d))
+* **tiktok:** keep login detection working across app updates ([2fa6c78](https://github.com/kveld9/kveld-morphe-patches/commit/2fa6c78927ba5f53dd94c1113e6977dfc449489f))
+* **tiktok:** keep privacy guard hooks verifier-safe on all register layouts ([da5837b](https://github.com/kveld9/kveld-morphe-patches/commit/da5837b656f326a6bf1f99cad8502e97f33c24fa))
+* **tiktok:** keep the profile banner container hidden when there is no banner ([5a5e803](https://github.com/kveld9/kveld-morphe-patches/commit/5a5e80350cf5914d748f299bf00de15d2f998827)), closes [#214](https://github.com/kveld9/kveld-morphe-patches/issues/214)
+* **tiktoklite:** bypass geoblocking popup and traffic drops ([f8ee40d](https://github.com/kveld9/kveld-morphe-patches/commit/f8ee40d4978fd3394a1fb73a645165f426c67941))
+* **tiktoklite:** filter ads and coin rewards on feed fragment ingestion ([7d04dda](https://github.com/kveld9/kveld-morphe-patches/commit/7d04dda9db08a7d4ebed76a835dd7d3600636bd3))
+* **tiktoklite:** keep clear display active when switching videos ([f7ebcda](https://github.com/kveld9/kveld-morphe-patches/commit/f7ebcdaf6da0a473fb3b96ce7b6643c674ae082d))
+* **tiktoklite:** preserve DataTransport runtime in Block Trackers Setup ([6cc59a2](https://github.com/kveld9/kveld-morphe-patches/commit/6cc59a2f35d70b8d780127b31d2efc6e045d09b7))
+* **tiktoklite:** preserve native Google sign-in ([4996259](https://github.com/kveld9/kveld-morphe-patches/commit/499625956acb6d42bac45be236913d0d8df08f30))
+* **tiktoklite:** preserve onboarding completion state in Block Popups ([42ebe1f](https://github.com/kveld9/kveld-morphe-patches/commit/42ebe1fae33acee0695a7f747fd8527b85e0180d))
+* **tiktoklite:** remember clear display mode across feed videos ([5498037](https://github.com/kveld9/kveld-morphe-patches/commit/54980373352a334975f8b9662162b810b6262b4f))
+* **tiktoklite:** resolve startup crash when disabling push ([238191d](https://github.com/kveld9/kveld-morphe-patches/commit/238191d1d03c1089894db23b656eb131861f81ec))
+* **tiktoklite:** restore device registration in Block Trackers ([04bb48f](https://github.com/kveld9/kveld-morphe-patches/commit/04bb48fe4e958810bb9cbed0d16495cabcc56420))
+* **tiktoklite:** strip promotional share tail in Clean Share Links ([c4644be](https://github.com/kveld9/kveld-morphe-patches/commit/c4644be099aa1557e49b542ed6d534fb491e7b99))
+* **tiktoklite:** update TikTok Lite target version to 47.7.51 ([b46b637](https://github.com/kveld9/kveld-morphe-patches/commit/b46b637ccd681f099bb08769ba629fbd394d93f2))
+* **tiktok:** log font redirection at info level instead of error ([c881bb5](https://github.com/kveld9/kveld-morphe-patches/commit/c881bb5dd1bb07c81a0e934bd6ee6d98f7cbce87))
+* **tiktok:** loosen voice comments fingerprint parameters on 47.7.2 ([4bba49b](https://github.com/kveld9/kveld-morphe-patches/commit/4bba49b904d5a748d700bf3a4396737afeba1664))
+* **tiktok:** name the hooked method correctly in the direct message log ([afe10e7](https://github.com/kveld9/kveld-morphe-patches/commit/afe10e7772fb39302f48405813f78124afc8fc9d))
+* **tiktok:** name the hooked method correctly in the video fit logs ([ae1b4a0](https://github.com/kveld9/kveld-morphe-patches/commit/ae1b4a07262592cb43a5e91f02c9c032148db825))
+* **tiktok:** prevent delayed auto-pause callbacks from pausing subsequent videos ([9931392](https://github.com/kveld9/kveld-morphe-patches/commit/9931392ed9aec858f9eaffc8a639e8f81aa9e97b))
+* **tiktok:** prevent memory growth in the comment action bar ([37ccef1](https://github.com/kveld9/kveld-morphe-patches/commit/37ccef1c31705a26240b67b1966615a560914051))
+* **tiktok:** prevent privacy filter corruption from thread-local state ([17fa2c8](https://github.com/kveld9/kveld-morphe-patches/commit/17fa2c803132c6fe02e65a0e8dc0d82438ad9d39))
+* **tiktok:** prune the dead GoogleOneTapAuth isAvailable hook ([9e3592a](https://github.com/kveld9/kveld-morphe-patches/commit/9e3592a990f2137f62771f3cdfba65a557e7d227))
+* **tiktok:** remove ProfileComponentUIConfig override that broke profile loading ([bf8389b](https://github.com/kveld9/kveld-morphe-patches/commit/bf8389b1b4d310d43cc8dbfe453ac4ceef4baad5))
+* **tiktok:** remove the ProfileBackgroundExp gate override that caused infinite profile loading loops ([7b5524e](https://github.com/kveld9/kveld-morphe-patches/commit/7b5524eace5223458a25e59a5d744bf5d38cc97d))
+* **tiktok:** resolve video directly from gesture target and remove fake sound save ([ce2cd2a](https://github.com/kveld9/kveld-morphe-patches/commit/ce2cd2aa859e28bb17239cb5879dae73e8d8d23f))
+* **tiktok:** restore auto-pause first video player controller on 47.7.2 ([2fd2d76](https://github.com/kveld9/kveld-morphe-patches/commit/2fd2d76e37a0ef751f147f64871fc36985c947c8))
+* **tiktok:** restore auto-pause first video player controller on 47.7.3 ([c3e47e7](https://github.com/kveld9/kveld-morphe-patches/commit/c3e47e77a3487f7688da8f1679a3c8df8c27f719))
+* **tiktok:** restore friends suggestions filter targets on 47.7.2 ([4e92aac](https://github.com/kveld9/kveld-morphe-patches/commit/4e92aac613d36378b7fce2dfab355df3e332102d))
+* **tiktok:** restore friends suggestions filter targets on 47.7.3 ([04e11ca](https://github.com/kveld9/kveld-morphe-patches/commit/04e11caf64f3ef24450b43d6ff0db83086b33baa))
+* **tiktok:** restore instant cold start hook on 47.7.2 ([d15e186](https://github.com/kveld9/kveld-morphe-patches/commit/d15e186bfde2fc49d20de7a467bdd71ae529c82e))
+* **tiktok:** restore instant cold start hook on 47.7.3 ([9af2baf](https://github.com/kveld9/kveld-morphe-patches/commit/9af2baf784f35819c9e4c02f2e628ff58145651c))
+* **tiktok:** restore system font patch on 47.7.2 ([6063eb7](https://github.com/kveld9/kveld-morphe-patches/commit/6063eb7b0dfcd47da22ae310500bfd08546c6bf9))
+* **tiktok:** restore system font patch on 47.7.3 ([7a0bd49](https://github.com/kveld9/kveld-morphe-patches/commit/7a0bd4955bf974eb9db256fcb13b7e0e25abbeb6))
+* **tiktok:** restore video fit mode on 47.7.2 ([3608892](https://github.com/kveld9/kveld-morphe-patches/commit/360889271b9c71e6c335e215f5c60a8377a3c667))
+* **tiktok:** restore video fit mode on 47.7.3 ([8c6fec5](https://github.com/kveld9/kveld-morphe-patches/commit/8c6fec5b1a16dbaa64ba058ec2064ac502886060))
+* **tiktok:** restrict content rules strictly to For You feed ([b422468](https://github.com/kveld9/kveld-morphe-patches/commit/b422468e39e4cb1233824e7daf5febfc4e615136))
+* **tiktok:** stop hiding failures of the clean comment copying hook ([eaad72e](https://github.com/kveld9/kveld-morphe-patches/commit/eaad72e5b77236ff59e0f9359020598d767aab4d))
+* **tiktok:** stop the black overlay on profiles without a banner ([3266744](https://github.com/kveld9/kveld-morphe-patches/commit/3266744ac6f5fe665ddac4082a5ec6f22a62b05f)), closes [#214](https://github.com/kveld9/kveld-morphe-patches/issues/214)
+* **tiktok:** translate comments immediately when batch arrives ([b4f6af7](https://github.com/kveld9/kveld-morphe-patches/commit/b4f6af793e7af5bc96c33c655b9b2ec304553db5))
+* **tiktok:** turn off the camera indicator when opening the camera fails ([a9706a3](https://github.com/kveld9/kveld-morphe-patches/commit/a9706a398b14a023de4fbe273a59c65e47e9e4b3))
+* **tiktok:** update client ai governor targets on 47.7.2 ([6567cff](https://github.com/kveld9/kveld-morphe-patches/commit/6567cff1171661b9ee74cab5a20022f4288be310))
+* **tiktok:** update client ai governor targets on 47.7.3 ([a144309](https://github.com/kveld9/kveld-morphe-patches/commit/a144309bd82cfd85e1f16f23f0a2514bf096398b))
+* **tiktok:** update custom share sheet targets on 47.7.2 ([e714742](https://github.com/kveld9/kveld-morphe-patches/commit/e7147427407b3968fc9684f9c3698afc8aaf458c))
+* **tiktok:** update custom share sheet targets on 47.7.3 ([76e16ea](https://github.com/kveld9/kveld-morphe-patches/commit/76e16ea9cb598c50fff22a692d300ba282a2b784))
+* **tiktok:** update device privacy guard targets on 47.7.2 ([4873a12](https://github.com/kveld9/kveld-morphe-patches/commit/4873a121ba45cc9842ad1c3af9353477a2aef3a0))
+* **tiktok:** update device privacy guard targets on 47.7.3 ([a6f162b](https://github.com/kveld9/kveld-morphe-patches/commit/a6f162bdcacc70f56415eb13020668f1d421dbb5))
+* **tiktok:** update direct message declutter targets on 47.7.2 ([99b84ff](https://github.com/kveld9/kveld-morphe-patches/commit/99b84ffa0bb8b6cda65180c9057b7a09eb27b286))
+* **tiktok:** update direct message declutter targets on 47.7.3 ([ae53374](https://github.com/kveld9/kveld-morphe-patches/commit/ae53374e54074696bfe275c5d58fbcdc7cff5bee))
+* **tiktok:** update feed ads content filter targets on 47.7.2 ([63e7e69](https://github.com/kveld9/kveld-morphe-patches/commit/63e7e69907d1cbfabc8ef18837af7189addad3ab))
+* **tiktok:** update feed ads content filter targets on 47.7.3 ([0bddeac](https://github.com/kveld9/kveld-morphe-patches/commit/0bddeac437e751c898e86ff772a69178e16ec4da))
+* **tiktok:** update feed interface declutter assem and trigger targets on 47.7.2 ([cd5ae4b](https://github.com/kveld9/kveld-morphe-patches/commit/cd5ae4b577daae94f065f522294e784a3df53cb6))
+* **tiktok:** update feed interface declutter assem and trigger targets on 47.7.3 ([701d30e](https://github.com/kveld9/kveld-morphe-patches/commit/701d30ed50efdf2512fe25ec30211dd95451860c))
+* **tiktok:** update feed navigation declutter targets on 47.7.2 ([9f80c24](https://github.com/kveld9/kveld-morphe-patches/commit/9f80c24000242d794867877972ab727df7b1568e))
+* **tiktok:** update feed navigation declutter targets on 47.7.3 ([e60d45c](https://github.com/kveld9/kveld-morphe-patches/commit/e60d45c0e1594d0d2e604b4dac882989fcfd68f2))
+* **tiktok:** update force auto scroll bottom bar facade on 47.7.2 ([6724333](https://github.com/kveld9/kveld-morphe-patches/commit/672433349efc491b583a5a5ef97b42ab9c63402b))
+* **tiktok:** update force auto scroll bottom bar facade on 47.7.3 ([4428289](https://github.com/kveld9/kveld-morphe-patches/commit/4428289e445a888f8070f7539081882ad022eda5))
+* **tiktok:** update hide inbox promos and alerts targets on 47.7.2 ([8c2acc6](https://github.com/kveld9/kveld-morphe-patches/commit/8c2acc623d5f51e6df904c9f6512aadbf5f73ec7))
+* **tiktok:** update hide inbox promos and alerts targets on 47.7.3 ([1e96c8e](https://github.com/kveld9/kveld-morphe-patches/commit/1e96c8ece774a28665f2acf6a56c5fec3ce5590d))
+* **tiktok:** update history recording governor targets on 47.7.2 ([7204fc1](https://github.com/kveld9/kveld-morphe-patches/commit/7204fc13b678cb65ccc1e6c6624f49f50f444828))
+* **tiktok:** update history recording governor targets on 47.7.3 ([4ee896e](https://github.com/kveld9/kveld-morphe-patches/commit/4ee896ed0c6ca6f4ceee58e824af8a9c2a5df3a1))
+* **tiktok:** update popups and prompts suppressor targets on 47.7.2 ([dd59388](https://github.com/kveld9/kveld-morphe-patches/commit/dd593885ebe5b3d1ebeefe38a0ea42492e45f5fa))
+* **tiktok:** update popups and prompts suppressor targets on 47.7.3 ([0e52980](https://github.com/kveld9/kveld-morphe-patches/commit/0e52980f27442da587add78ffc7c3a9b1d4b42d8))
+* **tiktok:** update search experience customizer targets on 47.7.2 ([65f3708](https://github.com/kveld9/kveld-morphe-patches/commit/65f3708d6f7c6b20dd38e6d912f449d3cfaebadd))
+* **tiktok:** update search experience customizer targets on 47.7.3 ([36aa2ba](https://github.com/kveld9/kveld-morphe-patches/commit/36aa2bad18fd532310b77d9b6bc57e2e18c68173))
+* **tiktok:** update target version to 47.7.3 ([3d1f2cb](https://github.com/kveld9/kveld-morphe-patches/commit/3d1f2cbf88b2fc17e8adf88a09692358bc1ad837))
+* **tiktok:** use the exact opcode when guarding the banner visibility call ([021621b](https://github.com/kveld9/kveld-morphe-patches/commit/021621bdd0bd255df7b740b86997fe2b2cbb88f9))
+* **universal:** allocate sufficient registers for license verification bypass ([85d2aa3](https://github.com/kveld9/kveld-morphe-patches/commit/85d2aa30b69e6e929886fa095cfc5569a7f596fa))
+* **universal:** guard Remove Debug Info against heap exhaustion ([24c924c](https://github.com/kveld9/kveld-morphe-patches/commit/24c924c7117a7902f5b15c422b23a7e3a56f9f14)), closes [MorpheApp/morphe-manager#1347](https://github.com/MorpheApp/morphe-manager/issues/1347)
+* **universal:** isolate update patch state to prevent JVM cross-contamination ([ff48c79](https://github.com/kveld9/kveld-morphe-patches/commit/ff48c791e379487a90f2f38ff9ba0487a6dc45d0))
+* **update-check:** clarify the update issue title ([e85e251](https://github.com/kveld9/kveld-morphe-patches/commit/e85e2517b51258b72e65b53faceae8054193d489))
+* **update-check:** fetch only the latest Brave release to keep the check reliable ([d9c83ef](https://github.com/kveld9/kveld-morphe-patches/commit/d9c83efb608d54cf637b251694fefdfa5af0c37e))
+* **update-check:** resume update notifications for Gboard Lite and TikTok ([de7f11a](https://github.com/kveld9/kveld-morphe-patches/commit/de7f11a94f006dfee42a97c069a731d5839d2689))
+* **update-check:** use a user agent APKMirror accepts for app pages ([90c8a86](https://github.com/kveld9/kveld-morphe-patches/commit/90c8a86ca33c096cb1abbba02c456f3b1e85b4ac))
+
+### New Features
+
+* **brave:** link both release APKs in update issues ([74ebfa3](https://github.com/kveld9/kveld-morphe-patches/commit/74ebfa38e2a131b996bbffc45359eabed62cccec))
+* **tiktok:** bump target version to 47.7.2 ([4952ef9](https://github.com/kveld9/kveld-morphe-patches/commit/4952ef988fba7a3d81ad972ad9e703fb8f753ae7))
+* **tiktoklite:** adapt feed ad filter to minilite model for 47.7.51 ([8087ee4](https://github.com/kveld9/kveld-morphe-patches/commit/8087ee489b1d2f95f943ed8ce25f79bb3e2f1163))
+* **tiktoklite:** adapt seekbar controller to minilite model for 47.7.51 ([81c52b3](https://github.com/kveld9/kveld-morphe-patches/commit/81c52b31d3f3371fdc9a3e737604b984e1d14c97))
+* **tiktoklite:** bump target version to 47.6.51 and restore complete ui bundle ([e8c06b1](https://github.com/kveld9/kveld-morphe-patches/commit/e8c06b1f1bc502bf824de294f51d1dc00b4845b7))
+* **tiktoklite:** bypass mandatory login wall ([e51cd88](https://github.com/kveld9/kveld-morphe-patches/commit/e51cd8837ec7fb09038bd7eeaa70b4da68f90850))
+* **tiktoklite:** hook Aweme getShareUrl on minilite feed model for 47.7.51 ([a5bfa82](https://github.com/kveld9/kveld-morphe-patches/commit/a5bfa82fe764db71d258365fb8c8369fce6ae024))
+* **tiktoklite:** implement persistent clear display mode across video scrolls ([740b28c](https://github.com/kveld9/kveld-morphe-patches/commit/740b28c15978dd8aeb4fa2dbbfbe4e7ce49d5dc4))
+* **tiktoklite:** prune absent upload hook from QUIC suppression on 47.7.51 ([dec4b91](https://github.com/kveld9/kveld-morphe-patches/commit/dec4b918184f92892e0e5c0d5589948ee9cf2233))
+* **tiktoklite:** prune non-applicable patches from TikTok Lite compatibility ([2a800b4](https://github.com/kveld9/kveld-morphe-patches/commit/2a800b4291f04f625df961a02f4aae07f8f76d61))
+* **tiktoklite:** report TikTok Lite updates ([cca6ad4](https://github.com/kveld9/kveld-morphe-patches/commit/cca6ad4aa03691f5268e0229a1a49b24c87c8b88))
+* **tiktoklite:** retarget playback display governor to minilite model for 47.7.51 ([3881125](https://github.com/kveld9/kveld-morphe-patches/commit/38811253a8aca5fe3866f7cf1bebc3b36d040988))
+* **tiktoklite:** retarget playback speed to native simplify player for 47.7.51 ([d614c1d](https://github.com/kveld9/kveld-morphe-patches/commit/d614c1ddc6b3f03e87d82f7bcb402fc58a66d0d2))
+* **tiktoklite:** retarget push service to minilite package for 47.7.51 ([a3cbc90](https://github.com/kveld9/kveld-morphe-patches/commit/a3cbc90aff1e48ca44720f596cc34bff77dcc041))
+* **tiktoklite:** rotate push dialog check target for 47.7.51 ([3338ce8](https://github.com/kveld9/kveld-morphe-patches/commit/3338ce8f77f9f3615e5536efd72bc5c653927fa7))
+* **tiktoklite:** silence modern Npth crash reporter overloads on 47.7.51 ([0a07139](https://github.com/kveld9/kveld-morphe-patches/commit/0a0713945b6b9695411ac8ed5e2dc715387e3c7b))
+* **tiktok:** port hide seen videos feed filter to tiktok lite ([7d7cedc](https://github.com/kveld9/kveld-morphe-patches/commit/7d7cedcf9ba671ce759a82a934451de7737db63c))
+* **universal:** add a battery-optimization toggle to the permission stripper ([2cf5c9c](https://github.com/kveld9/kveld-morphe-patches/commit/2cf5c9c30a7d789dc8dc0be1393dda84c10a24ef))
+* **universal:** add a display-over-other-apps toggle to the permission stripper ([dc9eb7b](https://github.com/kveld9/kveld-morphe-patches/commit/dc9eb7bb2d1dfef5f9cd556ebca46a9ce0da3246))
+* **universal:** add a financial-SMS toggle to the permission stripper ([35f130f](https://github.com/kveld9/kveld-morphe-patches/commit/35f130f0d23e7aa346088b0396f8507844dbe14c))
+* **universal:** add a Phone permission toggle to the permission stripper ([34f9c79](https://github.com/kveld9/kveld-morphe-patches/commit/34f9c79b08cb7862e0a4bcde2c2ad1768fc3e393))
+* **universal:** add a usage-access toggle to the permission stripper ([f783444](https://github.com/kveld9/kveld-morphe-patches/commit/f783444e1add436081f15cc06149a064b7575891))
+* **universal:** add an exact-alarms toggle to the permission stripper ([7c36673](https://github.com/kveld9/kveld-morphe-patches/commit/7c366735da84e2c0c503d3b3de8028df1c6b201e))
+* **universal:** add an install-apps toggle to the permission stripper ([0d631c9](https://github.com/kveld9/kveld-morphe-patches/commit/0d631c9ac10756c2e6cadf30e4f15dec9b89716c))
+* **universal:** add an SMS permission toggle to the permission stripper ([607fc86](https://github.com/kveld9/kveld-morphe-patches/commit/607fc86ce3690317330324d3ca78cff4406fe099))
+
+</details>
+
+CLI: MorpheApp/morphe-cli/morphe-desktop-2.2.0-all.jar  
+Patches: sashade8-ship-it/dual-vot-patches/patches-2.3.0-dualvot.8.5.4.mpp  
+[Changelog](https://github.com/sashade8-ship-it/dual-vot-patches/releases/tag/v2.3.0-dualvot.8.5.4)
+
+<details><summary>Patches release notes (v2.3.0-dualvot.8.5.4)</summary>
+
+## Dual VoT Patches 2.3.0-dualvot.8.5.4
+
+Stable automated update based on Morphe Patches 2.3.0.
+
+### Included
+
+- Google/other and Yandex voice-over translation in one patch bundle.
+- Separate player controls with mutual exclusion.
+- Dual VoT volume controls and automatic reset when the video changes.
+- Requests for previously untranslated Yandex videos.
+
+### Validation
+
+- Android patch bundle compiled successfully.
+- Both translation patches are present in generated metadata.
+- Required Dual VoT integration sources and bundle manifest were verified.
+
+This release was produced automatically. Runtime regressions that cannot be
+detected by compilation should be reported in this repository.
+
+</details>  
 
 Skipped:  
 Gboard: jasonwu1994/Gboard-patches/patches-4.3.0.mpp
-GboardLite: kveld9/kveld-morphe-patches/patches-2.10.1.mpp
-GooglePhotos: RookieEnough/De-Vanced/patches-1.6.4.mpp
-YouTube: sashade8-ship-it/dual-vot-patches/patches-2.2.0-dualvot.8.5.4.mpp  
+GooglePhotos: RookieEnough/De-Vanced/patches-1.6.4.mpp  
 
 Без изменений, перенесено из релиза 17:  
 - gboard-lite-kveld-v18.5.1.993608717-lite_beta-arm64-v8a.apk  
