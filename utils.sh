@@ -187,39 +187,64 @@ get_prebuilts() {
 
 # Makes a copy of a patches bundle with changed default values of Morphe settings.
 # $1 patches bundle, $2 output bundle, $3 whitespace separated key=value list
-# The extension (extensions/*.mpe) that contains all the keys is modified (e.g. YouTube, not YouTube Music).
+# Keys can live in different extensions (extensions/*.mpe), e.g. youtube.mpe and shared-youtube.mpe.
+# The extension that contains the most keys is modified first (e.g. YouTube, not YouTube Music),
+# the remaining keys go to the next ones. Fails if any key is not found.
 # Prints the applied list.
 apply_settings_defaults() {
 	local file=$1 out=$2 defaults=$3
-	local work ext="" op="" e k keys errs=""
-	keys=$(tr -s ' \t' '\n' <<<"$defaults" | sed -n 's/^\([^=]\+\)=.*/\1/p')
+	local work e k kv op="" o errs="" pending=() mine=() changed=() n
+	pending=($(tr -s ' \t' '\n' <<<"$defaults" | grep '='))
 	work=$(mktemp -d -p "$TEMP_DIR")
 	unzip -qo "$file" 'extensions/*' -d "$work" || {
 		rm -rf "$work"
 		return 1
 	}
 	while IFS= read -r e; do
-		for k in $keys; do grep -qaF "$k" "$e" || continue 2; done
-		# shellcheck disable=SC2086
-		if op=$(java -cp "${BIN_DIR}/dexlib2.jar" tools/SettingsDefaults.java "$e" "$e.new" $defaults 2>&1); then
-			ext=${e#"$work/"}
-			break
+		[ ${#pending[@]} -eq 0 ] && break
+		mine=()
+		for kv in "${pending[@]}"; do grep -qaF "${kv%%=*}" "$e" && mine+=("$kv"); done
+		[ ${#mine[@]} -eq 0 ] && continue
+		if ! o=$(java -cp "${BIN_DIR}/dexlib2.jar" tools/SettingsDefaults.java "$e" "$e.new" "${mine[@]}" 2>&1); then
+			# a key matched only as a substring: retry the keys one by one
+			errs+="${e##*/}: ${o}; "
+			local ok=()
+			for kv in "${mine[@]}"; do
+				if [ ${#ok[@]} -eq 0 ]; then
+					java -cp "${BIN_DIR}/dexlib2.jar" tools/SettingsDefaults.java "$e" "$e.new" "$kv" >/dev/null 2>&1 && ok+=("$kv")
+				else
+					java -cp "${BIN_DIR}/dexlib2.jar" tools/SettingsDefaults.java "$e" "$e.new" "${ok[@]}" "$kv" >/dev/null 2>&1 && ok+=("$kv")
+				fi
+			done
+			[ ${#ok[@]} -eq 0 ] && continue
+			mine=("${ok[@]}")
+			o=$(java -cp "${BIN_DIR}/dexlib2.jar" tools/SettingsDefaults.java "$e" "$e.new" "${mine[@]}" 2>&1) || continue
 		fi
-		errs+="${e##*/}: ${op}; "
-	done < <(find "$work/extensions" -name '*.mpe' | sort)
-	if [ -z "$ext" ]; then
-		epr "settings-defaults: no extension of '$file' has all of [$(tr '\n' ' ' <<<"$keys")] ${errs}"
+		mv -f "$e.new" "$e"
+		changed+=("${e#"$work/"}")
+		op+="${o}"$'\n'
+		local rest=()
+		for kv in "${pending[@]}"; do
+			isoneof "$kv" "${mine[@]}" || rest+=("$kv")
+		done
+		pending=("${rest[@]}")
+	done < <(for e in $(find "$work/extensions" -name '*.mpe' | sort); do
+		n=0
+		for kv in "${pending[@]}"; do grep -qaF "${kv%%=*}" "$e" && n=$((n + 1)); done
+		echo "$n $e"
+	done | sort -s -k1,1nr | cut -d' ' -f2-)
+	if [ ${#pending[@]} -ne 0 ]; then
+		epr "settings-defaults: not found in '$file': [${pending[*]%%=*}] ${errs}"
 		rm -rf "$work"
 		return 1
 	fi
-	mv -f "$work/$ext.new" "$work/$ext"
 	cp -f "$file" "$out" || return 1
-	(cd "$work" && zip -0q "${CWD}/${out}" "$ext") || {
+	(cd "$work" && zip -0q "${CWD}/${out}" "${changed[@]}") || {
 		rm -rf "$work"
 		return 1
 	}
 	rm -rf "$work"
-	echo "$op"
+	echo -n "${op%$'\n'}"
 }
 
 set_prebuilts() {
