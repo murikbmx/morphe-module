@@ -1,8 +1,15 @@
-⚠️ GboardLite не собран: не удалось скачать оригинал. Нужна версия **18.6.3.1002251336-lite_release-arm64-v8a** (arm64-v8a).  
-Скачайте её, например, с https://www.apkmirror.com/apk/google-inc/gboard и загрузите в релиз 'stock-apks' с именем `com.google.android.inputmethod.latin-18.6.3.1002251336-lite_release-arm64-v8a.apk` (или `.apkm` для split-архива), затем запустите сборку снова.  
+Gboard: 18.5.4.993608717-release-arm64-v8a  
+GboardLite: 18.6.3.1002251336-lite_release-arm64-v8a  
+GooglePhotos: 7.92.0.977185651  
 ProtonVPN: 5.21.9.0  
 YouTube: 21.30.216  
-⚠️ **YouTube не собран:** не удалось применить настройки по умолчанию (settings-defaults): вероятно, в новых патчах изменились названия настроек.  
+Default Morphe settings for YouTube:  
+- morphe_shorts_quality_default_wifi = 1080
+- morphe_hide_end_screen_cards = true
+- morphe_hide_end_screen_suggested_video = true
+- morphe_header_logo = PREMIUM
+- morphe_shorts_autoplay = true
+- morphe_video_quality_default_wifi = 1080  
 
 Non-root APK requires [MicroG-RE 7.3.1](https://github.com/MorpheApp/MicroG-RE/releases/tag/7.3.1)  
 MicroG-RE for arm64-v8a: [microg-7.3.1-icon-arm64-v8a.apk](https://github.com/MorpheApp/MicroG-RE/releases/download/7.3.1/microg-7.3.1-icon-arm64-v8a.apk)  
@@ -11,56 +18,74 @@ Use [zygisk-detach](https://github.com/j-hc/zygisk-detach) to detach the YouTube
 Patches: [dual-vot-patches](https://github.com/sashade8-ship-it/dual-vot-patches)  
 Builder: [morphe-module](https://github.com/murikbmx/morphe-module), based on [revanced-magisk-module](https://github.com/j-hc/revanced-magisk-module)
   
-Patches: hxreborn/morphe-patches/patches-1.80.0.mpp  
-[Changelog](https://github.com/hxreborn/morphe-patches/releases/tag/v1.80.0)
+Patches: hxreborn/morphe-patches/patches-1.81.0.mpp  
+[Changelog](https://github.com/hxreborn/morphe-patches/releases/tag/v1.81.0)
 
-<details><summary>Patches release notes (v1.80.0)</summary>
+<details><summary>Patches release notes (v1.81.0)</summary>
 
-## [1.80.0](https://github.com/hxreborn/morphe-patches/compare/v1.79.0...v1.80.0) (2026-11-16)
+## [1.81.0](https://github.com/hxreborn/morphe-patches/compare/v1.80.0...v1.81.0) (2026-11-17)
 
 ### Bug Fixes
 
-* **Quranify - Unlock premium:** load reciters after server change ([085c9bc](https://github.com/hxreborn/morphe-patches/commit/085c9bc6196200901ac87f0f27ff72426c37c520))
+* **BitTorrent - Unlock premium:** show Pro settings in patches menu ([322e241](https://github.com/hxreborn/morphe-patches/commit/322e2418cbaa08060d920816ef65961ce0bee8fe))
+* **Proton Mail - Hide upgrade promotions:** skip sale screens at launch ([3483bb0](https://github.com/hxreborn/morphe-patches/commit/3483bb0116939e27af6333e3cf240be6c8da5baf))
+* **Public - Remove promotions:** remove pop-ups over bottom bar tabs ([38985d3](https://github.com/hxreborn/morphe-patches/commit/38985d3ddd8ae6a9aed4c01cd5bb02f6c51210db)), closes [#770](https://github.com/hxreborn/morphe-patches/issues/770)
+* **µTorrent - Unlock premium:** show Pro settings in patches menu ([d362ad1](https://github.com/hxreborn/morphe-patches/commit/d362ad1b67bb634c906fc99b929fc3f095917992))
 
 ### New Features
 
-* **BitTorrent - Unlock premium:** enable Pro features and remove ads ([666af2c](https://github.com/hxreborn/morphe-patches/commit/666af2cb9da24394c57e04bcb98360b71b2974aa))
-* **SHTTPS Marketless - Unlock PLUS:** enable remote screen control ([15b8063](https://github.com/hxreborn/morphe-patches/commit/15b806359252c01ff67fbe500cad86028ccc11d8))
-* **µTorrent - AMOLED dark theme:** make page backgrounds black ([a6c8028](https://github.com/hxreborn/morphe-patches/commit/a6c80289d6498a824a4938fc7119ca897e5d9386))
-* **µTorrent - Unlock premium:** enable Pro features and remove ads ([05c9dbd](https://github.com/hxreborn/morphe-patches/commit/05c9dbddffe4b9ee15a860b4fceb993637d5e1bc))
+* **BitTorrent - AMOLED dark theme:** add black surfaces setting to menu ([e13d256](https://github.com/hxreborn/morphe-patches/commit/e13d256bebd98c35a517eef396cb17e75e389bef))
+* **BitTorrent - Fix screen insets:** keep screens clear of system bars ([812c3c1](https://github.com/hxreborn/morphe-patches/commit/812c3c1faabb4d8b768f413cce5362b7552a77f8))
+* **Botim - Hide Home tab:** open on Calls without Home tab ([14c6a4c](https://github.com/hxreborn/morphe-patches/commit/14c6a4ca708c7051c7bb2c30472acd17898f995e))
+* **Botim - Remove Home sections:** remove Services and Discover banners ([14b2843](https://github.com/hxreborn/morphe-patches/commit/14b28436d64ea1718c13f1f6bede0292dc88d754)), closes [#788](https://github.com/hxreborn/morphe-patches/issues/788)
+* **Proton Mail - Scheduled Trash and Spam deletion:** run in background ([a0020df](https://github.com/hxreborn/morphe-patches/commit/a0020dffefbdf540412b63cfc7bd1ae75590a81e)), closes [#778](https://github.com/hxreborn/morphe-patches/issues/778)
+* **Proton Mail - Scheduled Trash and Spam deletion:** toast on reopen ([3149681](https://github.com/hxreborn/morphe-patches/commit/3149681f234b0ecbb79d6057709d68801df47bed)), closes [#778](https://github.com/hxreborn/morphe-patches/issues/778)
+* **Public - Disable trailer autoplay:** show posters on Local Drama ([cd13922](https://github.com/hxreborn/morphe-patches/commit/cd139224315b78f25f8984ea338aa40cb476903c)), closes [#770](https://github.com/hxreborn/morphe-patches/issues/770)
+* **Public - Remove startup animation:** open without animated logo ([7f21647](https://github.com/hxreborn/morphe-patches/commit/7f21647461d1053800d91567c63dca8d85c23ae5)), closes [#770](https://github.com/hxreborn/morphe-patches/issues/770)
+* **TradingView - Disable analytics:** block telemetry and Snowplow ([6e739f7](https://github.com/hxreborn/morphe-patches/commit/6e739f7ca1e84fd245bb5dd068afa2f005cbfc49)), closes [#895](https://github.com/hxreborn/morphe-patches/issues/895)
+* **Viber - Hide image remix:** add patches menu switch ([8815fd1](https://github.com/hxreborn/morphe-patches/commit/8815fd1d8fac9e075027383d3bd580a660189ffe))
+* **Viber - Hide image remix:** remove Remix button and intro popup ([5d9e517](https://github.com/hxreborn/morphe-patches/commit/5d9e517d9e733f92c08ab7cab06bc8ae74c19375)), closes [#777](https://github.com/hxreborn/morphe-patches/issues/777)
+* **Viber - Remove deleted message notices:** add patches menu switch ([b68f200](https://github.com/hxreborn/morphe-patches/commit/b68f2003454d67fa214da15fe88bdcff4fb0b648))
+* **Viber - Remove deleted message notices:** leave no trace on delete ([b01bfce](https://github.com/hxreborn/morphe-patches/commit/b01bfce6d4f7148350b6edc3940505d11ff1a73b)), closes [#776](https://github.com/hxreborn/morphe-patches/issues/776)
+* **µTorrent - AMOLED dark theme:** add black surfaces setting to menu ([1bacbc3](https://github.com/hxreborn/morphe-patches/commit/1bacbc38f27593ad03b61f390f1f97e7dce9ac8f))
+* **µTorrent - Fix screen insets:** keep screens clear of system bars ([af044da](https://github.com/hxreborn/morphe-patches/commit/af044dad4e181c2d89119b70c9e9f74eec5e6f84))
 
 ### Updated App Support
 
-* **Arc Player:** add support for `1.5.0.145` ([8885cf0](https://github.com/hxreborn/morphe-patches/commit/8885cf069c1ac0d061c65af7dacc806f95c1ad7c)), closes [#790](https://github.com/hxreborn/morphe-patches/issues/790)
-* **AtloMaps:** add support for `2.0.3` ([7a058ae](https://github.com/hxreborn/morphe-patches/commit/7a058ae7aeb72b9267086ad5e72c7e0bfb9fd275)), closes [#792](https://github.com/hxreborn/morphe-patches/issues/792)
-* **Audible:** add support for `26.45.08` ([2988812](https://github.com/hxreborn/morphe-patches/commit/29888120931a26d123b292b7732bf205860af76c)), closes [#793](https://github.com/hxreborn/morphe-patches/issues/793)
-* **Biwenger:** add support for `4.0.5` ([088a88d](https://github.com/hxreborn/morphe-patches/commit/088a88df9d82ac1a0a4c50fa973a0deb8db440e0)), closes [#799](https://github.com/hxreborn/morphe-patches/issues/799)
-* **botim:** add support for `4.21.1` ([429cfec](https://github.com/hxreborn/morphe-patches/commit/429cfec467928991ee10e9ad6a6a4c1d30c83d34)), closes [#801](https://github.com/hxreborn/morphe-patches/issues/801)
-* **Clink:** add support for `2.0.2` ([620c258](https://github.com/hxreborn/morphe-patches/commit/620c2587db3abe2f59850d742dcb3eb3927c242a)), closes [#803](https://github.com/hxreborn/morphe-patches/issues/803)
-* **Clone App:** add support for `4.2.5` ([70d2801](https://github.com/hxreborn/morphe-patches/commit/70d28015328fdc331ad49f67efc1c26b427a310d)), closes [#804](https://github.com/hxreborn/morphe-patches/issues/804)
-* **Desh Telugu Keyboard:** add support for `17.7.3` ([afd9c95](https://github.com/hxreborn/morphe-patches/commit/afd9c95fb9f8036af41c8b7dea53952d70ea73d0)), closes [#806](https://github.com/hxreborn/morphe-patches/issues/806)
-* **Echo Equalizer:** add support for `10.0` ([d326614](https://github.com/hxreborn/morphe-patches/commit/d3266143feb32a75b49b4ab1c219ae6c3e974715)), closes [#809](https://github.com/hxreborn/morphe-patches/issues/809)
-* **Fast STL Viewer:** add support for `2.95` ([6961c4c](https://github.com/hxreborn/morphe-patches/commit/6961c4c2bb62fa89cb9d5c307887b0b03cdccd20)), closes [#811](https://github.com/hxreborn/morphe-patches/issues/811)
-* **ForusApp:** add support for `3.0.20` ([481d25a](https://github.com/hxreborn/morphe-patches/commit/481d25adbdd4d5666f7ca813976da497582804fd)), closes [#812](https://github.com/hxreborn/morphe-patches/issues/812)
-* **Ground News:** add support for `5.1.0` ([e2c0e3a](https://github.com/hxreborn/morphe-patches/commit/e2c0e3a1a66854e0576eb8b781d3d98209c820c8)), closes [#813](https://github.com/hxreborn/morphe-patches/issues/813)
-* **Joyn Austria:** add support for `6.9.2-AOS-JOYN_AT-2282180` ([e99d618](https://github.com/hxreborn/morphe-patches/commit/e99d618624eb8e1219ff9b6a05ce4b6ac248d0c9)), closes [#817](https://github.com/hxreborn/morphe-patches/issues/817)
-* **Liftoff:** add support for `2.18.0` ([1aae904](https://github.com/hxreborn/morphe-patches/commit/1aae9049006b2eaf0207d6ef0de8599c9a35d318)), closes [#818](https://github.com/hxreborn/morphe-patches/issues/818)
-* **Magic Earth:** add support for `7.1.26.42.F9918E5E.7B9203C7B` ([ab8a945](https://github.com/hxreborn/morphe-patches/commit/ab8a945043a853c91bb50d8c6098f4d91bb42c8f)), closes [#820](https://github.com/hxreborn/morphe-patches/issues/820)
-* **MangaTime:** add support for `1.25.3` ([8912d04](https://github.com/hxreborn/morphe-patches/commit/8912d04748295555e34d6ac5681533f9487c5114)), closes [#821](https://github.com/hxreborn/morphe-patches/issues/821)
-* **MBC Shahid:** add support for `8.12.2` ([67cdcb2](https://github.com/hxreborn/morphe-patches/commit/67cdcb221931f59d4d39add2696e4acb8ab94f74)), closes [#822](https://github.com/hxreborn/morphe-patches/issues/822)
-* **Nara Baby:** add support for `2.9.0` ([42e0c62](https://github.com/hxreborn/morphe-patches/commit/42e0c62f5fe8f9b87e765ddd3452f6b146dd7685)), closes [#826](https://github.com/hxreborn/morphe-patches/issues/826)
-* **Notein:** add support for `v2.1.49.0` ([f6ac2e8](https://github.com/hxreborn/morphe-patches/commit/f6ac2e88a595319e7d0342bc2d605b0897451b53)), closes [#827](https://github.com/hxreborn/morphe-patches/issues/827)
-* **One4Home Launcher:** add support for `0.5.190` ([b35ac71](https://github.com/hxreborn/morphe-patches/commit/b35ac71c46fedaed3c3cf4841966b677eed9c5b4)), closes [#829](https://github.com/hxreborn/morphe-patches/issues/829)
-* **Opal:** add support for `4.19.1` ([457bbdf](https://github.com/hxreborn/morphe-patches/commit/457bbdf51a5e094d90188d9d49c4ef7394877d2e)), closes [#830](https://github.com/hxreborn/morphe-patches/issues/830)
-* **Photo Editor Pro:** add support for `1.823.268` ([df225a9](https://github.com/hxreborn/morphe-patches/commit/df225a9834208869a0a62a35ea1da80e83512520)), closes [#834](https://github.com/hxreborn/morphe-patches/issues/834)
-* **Pixlr:** add support for `3.9.4` ([6cec380](https://github.com/hxreborn/morphe-patches/commit/6cec3800d5873bedae6227f79923dae19b105c51)), closes [#835](https://github.com/hxreborn/morphe-patches/issues/835)
-* **Projectivy Launcher:** add support for `4.73` ([729f685](https://github.com/hxreborn/morphe-patches/commit/729f68533df5751f3b794faf96ab13c430827f87)), closes [#837](https://github.com/hxreborn/morphe-patches/issues/837)
-* **QR & Barcode Scanner:** add support for `2.2.229` ([9882359](https://github.com/hxreborn/morphe-patches/commit/9882359e0c61e7bb7e48606b155a8a908e959d0e)), closes [#838](https://github.com/hxreborn/morphe-patches/issues/838)
-* **Quick Cursor:** add support for `3.1.0` ([0dbc4b9](https://github.com/hxreborn/morphe-patches/commit/0dbc4b93491042fe873530fc64196ff8bdb1f4c7)), closes [#839](https://github.com/hxreborn/morphe-patches/issues/839)
-* **Radio Javan:** add support for `11.24.0` ([a763d4a](https://github.com/hxreborn/morphe-patches/commit/a763d4ada07ffe1fb86f6f9d3cd56b19d78759a6)), closes [#841](https://github.com/hxreborn/morphe-patches/issues/841)
+* **DevCheck:** add support for 6.63 ([9a7decc](https://github.com/hxreborn/morphe-patches/commit/9a7deccf36283b6794cfe8c5720366d0ee37e00a))
 
 </details>
 
+Patches: jasonwu1994/Gboard-patches/patches-4.3.0.mpp  
+[Changelog](https://github.com/jasonwu1994/Gboard-patches/releases/tag/v4.3.0)
+
+<details><summary>Patches release notes (v4.3.0)</summary>
+
+### ✨ New Features
+
+* **Gboard:** add an FAQ section to the Frosted Glass page, with links for when the effect isn't working and for flickering on Pixel phones.
+* **Gboard:** change the defaults of two settings: English Up-Flick Uppercase is now off and the Access Points menu style is now on. Settings you have already saved are kept.
+
+### 🐛 Bug Fixes
+
+* **Gboard:** fix the keyboard closing by itself with Frosted Glass enabled ("Software rendering doesn't support drawRenderNode"). If blur fails to draw, the keyboard now falls back to its theme.
+* **Gboard:** make "Extend to navigation bar" work on Android 15 and below. The navigation bar follows the keyboard's transparency, without blur.
+* **Gboard:** make "Extend to navigation bar" work with narrower docked keyboards, such as one-handed mode.
+
+### ✨ 新功能
+
+* **Gboard:** 在「磨砂玻璃」頁面新增 FAQ 區塊，提供「為什麼磨砂玻璃沒有效果？」和「為什麼 Pixel 手機輸入文字時會閃爍？」的說明連結。
+* **Gboard:** 調整兩項設定的預設值：「英文鍵盤上滑大小寫」改為關閉，「Access Points 選單樣式」改為開啟。已儲存的設定不受影響。
+
+### 🐛 修復
+
+* **Gboard:** 修復啟用磨砂玻璃後鍵盤自行關閉的問題（`Software rendering doesn't support drawRenderNode`）。模糊效果繪製失敗時，鍵盤會改回使用主題背景。
+* **Gboard:** 修復「延伸到導覽列」在 Android 15 以下沒有效果的問題。導覽列會跟隨鍵盤的透明度，但沒有模糊效果。
+* **Gboard:** 修復「延伸到導覽列」在單手模式等較窄的固定式鍵盤上沒有效果的問題。
+
+</details>
+
+CLI: MorpheApp/morphe-cli/morphe-desktop-2.2.0-all.jar  
 Patches: kveld9/kveld-morphe-patches/patches-2.11.0.mpp  
 [Changelog](https://github.com/kveld9/kveld-morphe-patches/releases/tag/v2.11.0)
 
@@ -222,7 +247,20 @@ Patches: kveld9/kveld-morphe-patches/patches-2.11.0.mpp
 
 </details>
 
-CLI: MorpheApp/morphe-cli/morphe-desktop-2.2.0-all.jar  
+Patches: RookieEnough/De-Vanced/patches-1.6.4.mpp  
+[Changelog](https://github.com/RookieEnough/De-Vanced/releases/tag/v1.6.4)
+
+<details><summary>Patches release notes (v1.6.4)</summary>
+
+## [1.6.4](https://github.com/RookieEnough/De-Vanced/compare/v1.6.3...v1.6.4) (2026-11-04)
+
+### 🐛 Bug Fixes
+
+* **Messenger:** Add support for `586.0.0.55.92` ([#177](https://github.com/RookieEnough/De-Vanced/issues/177)) ([17584e2](https://github.com/RookieEnough/De-Vanced/commit/17584e2903e907c1d63b408cbf4201fc7b76a8e0))
+* **Strava:** Fix `Overwrite media upload parameters` patch ([7c7a9af](https://github.com/RookieEnough/De-Vanced/commit/7c7a9af6e39c6ea892d4883151e2ddefe52376cc))
+
+</details>
+
 Patches: sashade8-ship-it/dual-vot-patches/patches-2.3.0-dualvot.8.5.4.mpp  
 [Changelog](https://github.com/sashade8-ship-it/dual-vot-patches/releases/tag/v2.3.0-dualvot.8.5.4)
 
@@ -249,15 +287,3 @@ This release was produced automatically. Runtime regressions that cannot be
 detected by compilation should be reported in this repository.
 
 </details>  
-
-Skipped:  
-Gboard: jasonwu1994/Gboard-patches/patches-4.3.0.mpp
-GooglePhotos: RookieEnough/De-Vanced/patches-1.6.4.mpp  
-
-Без изменений, перенесено из релиза 17:  
-- gboard-lite-kveld-v18.5.1.993608717-lite_beta-arm64-v8a.apk  
-- gboard-wu-v18.5.4.993608717-release-arm64-v8a.apk  
-- googlephotos-devanced-module-v7.92.0.977185651-arm64-v8a.zip  
-- googlephotos-devanced-v7.92.0.977185651-arm64-v8a.apk  
-- youtube-dualvot-module-v21.30.216-arm64-v8a.zip  
-- youtube-dualvot-v21.30.216-arm64-v8a.apk  
