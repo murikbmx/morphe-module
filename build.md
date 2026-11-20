@@ -1,8 +1,7 @@
 Gboard: 18.5.4.993608717-release-arm64-v8a  
 GboardLite: 18.6.3.1002251336-lite_release-arm64-v8a  
 GooglePhotos: 7.92.0.977185651  
-⚠️ ProtonVPN не собран: не удалось скачать оригинал. Нужна версия **5.21.57.0** (all).  
-Скачайте её, например, с https://www.apkmirror.com/apk/proton-technologies-ag/protonvpn-secure-and-free-vpn и загрузите в релиз 'stock-apks' с именем `ch.protonvpn.android-5.21.57.0-all.apk` (или `.apkm` для split-архива), затем запустите сборку снова.  
+ProtonVPN: 5.21.57.0  
 YouTube: 21.30.216  
 Default Morphe settings for YouTube:  
 - morphe_shorts_quality_default_wifi = 1080
@@ -285,6 +284,3 @@ This release was produced automatically. Runtime regressions that cannot be
 detected by compilation should be reported in this repository.
 
 </details>  
-
-Без изменений, перенесено из релиза 26:  
-- proton-vpn-hxreborn-v5.21.9.0-arm64-v8a.apk  
