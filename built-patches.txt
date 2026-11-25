@@ -1,5 +1,5 @@
 GboardLite|kveld9/kveld-morphe-patches/patches-2.11.0.mpp
 Gboard|jasonwu1994/Gboard-patches/patches-4.4.0.mpp
 GooglePhotos|RookieEnough/De-Vanced/patches-1.6.4.mpp
-ProtonVPN|hxreborn/morphe-patches/patches-1.87.0.mpp
+ProtonVPN|hxreborn/morphe-patches/patches-1.88.0.mpp
 YouTube|sashade8-ship-it/dual-vot-patches/patches-2.3.0-dualvot.8.5.4.mpp
