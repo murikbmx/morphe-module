@@ -1,12 +1,4 @@
-Gboard: 18.5.4.993608717-release-arm64-v8a  
-YouTube: 21.30.216  
-Default Morphe settings for YouTube:  
-- morphe_shorts_quality_default_wifi = 1080
-- morphe_hide_end_screen_cards = true
-- morphe_hide_end_screen_suggested_video = true
-- morphe_header_logo = PREMIUM
-- morphe_shorts_autoplay = true
-- morphe_video_quality_default_wifi = 1080  
+ProtonVPN: 5.21.57.0  
 
 Non-root APK requires [MicroG-RE 7.4.0](https://github.com/MorpheApp/MicroG-RE/releases/tag/7.4.0)  
 MicroG-RE for arm64-v8a: [microg-7.4.0-icon-arm64-v8a.apk](https://github.com/MorpheApp/MicroG-RE/releases/download/7.4.0/microg-7.4.0-icon-arm64-v8a.apk)  
@@ -15,85 +7,70 @@ Use [zygisk-detach](https://github.com/j-hc/zygisk-detach) to detach the YouTube
 Patches: [dual-vot-patches](https://github.com/sashade8-ship-it/dual-vot-patches)  
 Builder: [morphe-module](https://github.com/murikbmx/morphe-module), based on [revanced-magisk-module](https://github.com/j-hc/revanced-magisk-module)
   
-Patches: jasonwu1994/Gboard-patches/patches-4.5.0.mpp  
-[Changelog](https://github.com/jasonwu1994/Gboard-patches/releases/tag/v4.5.0)
+Patches: hxreborn/morphe-patches/patches-1.89.0.mpp  
+[Changelog](https://github.com/hxreborn/morphe-patches/releases/tag/v1.89.0)
 
-<details><summary>Patches release notes (v4.5.0)</summary>
+<details><summary>Patches release notes (v1.89.0)</summary>
 
-### ✨ New Features
+## [1.89.0](https://github.com/hxreborn/morphe-patches/compare/v1.88.0...v1.89.0) (2026-11-27)
 
-* **Gboard:** **Web Clipboard**: add bidirectional image and screenshot sync. Copy an image or take a screenshot on your phone to see it in the web portal right away, or upload, paste, or drag-and-drop one or multiple images from your browser directly into your phone's clipboard and Gboard clipboard history.
-* **Gboard:** **Web Clipboard**: upgrade the image viewer and workspace UI with a fullscreen lightbox featuring fixed full-height left/right navigation edges, a bottom thumbnail filmstrip for quick switching, top-right copy/download/close actions, compact upload previews, a checkerboard backdrop for transparent images, and refined empty states and same-day timestamps.
-* **Gboard:** add 11 more languages to the `Patches` settings page: Simplified Chinese, Japanese, Korean, Spanish, Brazilian Portuguese, Russian, German, French, Vietnamese, Indonesian, and Turkish. When **Language** is set to **System default**, the settings page follows your system language if it is supported; you can also pick any of the 13 bundled languages manually. Any text that is not translated yet is shown in English.
-* **Gboard:** add 9 more buttons to the `Toolbar Editing Buttons` patch: Forward Delete, Paste as plain text, Home, End, Tab, and the Left, Right, Up, and Down arrow keys.
-* **Gboard:** toolbar button labels for `Toolbar Editing Buttons`, `Floating Web Search`, and `Incognito Mode Toggle` now follow the **Language** setting on the `Patches` settings page instead of always showing English.
-* **Gboard:** **Clipboard Enhancements** adds an optional **Select All** button at the far left of the clipboard edit toolbar. Enable it under **Patches → Clipboard → General**, where the setting includes a description and preview. **Select All** includes pinned clips by default. Turn on **Exclude pinned clips** to select only unpinned clips, then use Gboard’s built-in **Delete** button to remove the selection.
-* **Gboard:** **Backup & Restore** can now export Gboard's own personal data to a ZIP file. You choose what to include: learned words, personal dictionary, blocked suggestions, emoji and GIF history, custom themes, pinned clipboard items, and Gboard settings.
-* **Gboard:** **Import Gboard data** restores the items you choose. Before importing, it lists everything that will be replaced. Afterwards, it shows the result for each item and offers **Restart Gboard**. Backups from a newer Gboard are rejected. Only pinned clipboard items are included, and Gboard may ask for contacts access after you restore settings.
+### Bug Fixes
 
-### 🐛 Bug Fixes
+* **MovieBox - Unlock premium:** restore 720p and 1080p downloads ([2048db6](https://github.com/hxreborn/morphe-patches/commit/2048db6d3bdb56e153a75ab1195370605f87a65f)), closes [#1086](https://github.com/hxreborn/morphe-patches/issues/1086)
+* **MovieBox:** adapt to 25/11/2026 backend changes ([081f528](https://github.com/hxreborn/morphe-patches/commit/081f52829a29f1c6ea4979dba9d7bea0c7b46009))
+* **MuscleWiki - Unlock premium:** open Strength Level tool ([186521a](https://github.com/hxreborn/morphe-patches/commit/186521a0d12df5fd973e15ad2d00ccf913721a4f))
+* **Nara Baby - Unlock premium:** remove lifetime sale banner ([5097182](https://github.com/hxreborn/morphe-patches/commit/5097182eb5b1014b1bb186d77d4c8184115b46fa))
+* **Proton VPN:** resolve resource IDs for each APK ([f8fb226](https://github.com/hxreborn/morphe-patches/commit/f8fb226e47b25131cd21d5b7c38b172c28a159a4))
+* **TradingView - Unlock chart features:** restore bar replay ([8894610](https://github.com/hxreborn/morphe-patches/commit/8894610fa3417815638547e694ee0e629bade985)), closes [#1077](https://github.com/hxreborn/morphe-patches/issues/1077)
+* **VLLO:** remove 13.9.0, 13.9.6 and 13.9.18 app targets ([f48fa17](https://github.com/hxreborn/morphe-patches/commit/f48fa17caaccdf4dca42338116751a553a87e0b5))
+* **Yuka - Sign-in token:** allow sign-in in cloned installs ([e63defa](https://github.com/hxreborn/morphe-patches/commit/e63defa03dbfdb6709f0d155579e14594822e095))
 
-* **Gboard:** **Web Clipboard**: fix cleared messages reappearing after reloading the page by clearing the phone-hosted latest clipboard snapshot along with the browser thread.
-* **Gboard:** **Web Clipboard**: fix message ordering when phone and computer clocks differ by ordering thread items using the browser's local receive time.
-* **Gboard:** **Web Clipboard**: fix top action button clipping in the image lightbox, corner border clipping on the drag-and-drop overlay, and potential history entry collisions when uploading multiple images at once.
-* **Gboard:** **Toolbar Editing Buttons**: redraw the Select All icon so it no longer looks identical to Gboard's built-in Resize button.
-* **Gboard:** **Frosted Glass**: fix an issue where invoking the keyboard could leave the background transparent without blur until you tap a key, by scheduling a single next-frame redraw after a new blur surface is created.
+### New Features
 
-### ✨ 新功能
+* **Audiomack - Export downloaded songs:** add cover art to saved songs ([49fc8de](https://github.com/hxreborn/morphe-patches/commit/49fc8de7df77e57afe24bd21950a34b12a6b2aeb)), closes [#1078](https://github.com/hxreborn/morphe-patches/issues/1078)
+* **Citra - Remove ads:** remove ads from games ([b387374](https://github.com/hxreborn/morphe-patches/commit/b3873748cec4a1655ab5595b5152a3fdd610ea40))
+* **Clip Studio Paint - Lower Android requirement:** run on Android 12 ([4ac098b](https://github.com/hxreborn/morphe-patches/commit/4ac098b1eb9a14c0d39d04dfe83a45ddac18b4b3)), closes [#1083](https://github.com/hxreborn/morphe-patches/issues/1083)
+* **ExifTool - Remove ads:** hide banner, interstitial and app-open ads ([9bd6eac](https://github.com/hxreborn/morphe-patches/commit/9bd6eac7f497e6f9502c77fd0303c9f42eebc4cb))
+* **ExifTool - Unlock premium:** unlock editing, watermarks and map pins ([f9e9024](https://github.com/hxreborn/morphe-patches/commit/f9e9024bbb68c62fcaec357e20d92faab1b2caed))
+* **Filmish - Unlock premium:** unlock Pro tools, remove watermark ([d8461c5](https://github.com/hxreborn/morphe-patches/commit/d8461c5daeaaf57ef075cb89be500d35714c0aff))
+* **GSMArena - Remove ads:** hide banner, interstitial and sponsor ads ([4419189](https://github.com/hxreborn/morphe-patches/commit/441918963838da28b43cfcd69bf893ad470c2cc0))
+* **Hourly Chime - Unlock premium:** unlock chime options and remove ads ([4e5583f](https://github.com/hxreborn/morphe-patches/commit/4e5583fc036cccb8ddb2efd2eda1494cf9282745))
+* **Magic Poser - Disable tracking:** stop analytics events ([2788528](https://github.com/hxreborn/morphe-patches/commit/2788528158804764da796eb5ca903a06992d6857))
+* **Magic Poser - Unlock premium:** unlock Pro and Master features ([90c9c1a](https://github.com/hxreborn/morphe-patches/commit/90c9c1a6d8892523b449798b7b99d6c9fa646c1c))
+* **MuscleWiki - Clone routines:** add Duplicate to routine menus ([b0a25be](https://github.com/hxreborn/morphe-patches/commit/b0a25be0fe8dd9332ff8324c2822142de0165f0d)), closes [#1064](https://github.com/hxreborn/morphe-patches/issues/1064)
+* **Nara Baby - Remove rating prompts:** hide Play Store rating bar ([84bd8ba](https://github.com/hxreborn/morphe-patches/commit/84bd8ba2bceb30951174df41aa5167c7880f676e))
+* **one sec - Unlock Pro:** block unlimited apps and in-app distractions ([467ce36](https://github.com/hxreborn/morphe-patches/commit/467ce36e4374e7177a28a3c32322ea845df9ba17))
+* **Patreon - Hide recommended creators:** filter posts below a post ([a5fd792](https://github.com/hxreborn/morphe-patches/commit/a5fd792067a86075c80a11da69f35503449c0592)), closes [#1079](https://github.com/hxreborn/morphe-patches/issues/1079)
+* **PCAPdroid - Unlock premium:** unlock firewall, malware scans, Pcapng ([6402483](https://github.com/hxreborn/morphe-patches/commit/6402483cdbb382b019475066691634b089b6060d))
+* **Proton VPN - Enable guest mode:** add guest option to welcome screen ([78e9ad6](https://github.com/hxreborn/morphe-patches/commit/78e9ad6e9fcf50435436bdc3a44d44176ef4257d)), closes [#1088](https://github.com/hxreborn/morphe-patches/issues/1088)
+* **TradingView - Unlock chart features:** run long scripts in replay ([8140dc8](https://github.com/hxreborn/morphe-patches/commit/8140dc89e789397a6e3d71377f52e8be26440968))
+* **Viber - Ignore accents in contact search:** match plain spellings ([3e6a277](https://github.com/hxreborn/morphe-patches/commit/3e6a27776bcb37601e4990b295f7b8fddc0d0cbb)), closes [#1091](https://github.com/hxreborn/morphe-patches/issues/1091)
+* **VLLO:** support 14.0.2 ([a0c274b](https://github.com/hxreborn/morphe-patches/commit/a0c274bca81f373e70f5c8ab84800495a1fad05c)), closes [#855](https://github.com/hxreborn/morphe-patches/issues/855)
+* **VoCat - Unlock premium:** unlock FSRS and widget, remove ads ([6b866ca](https://github.com/hxreborn/morphe-patches/commit/6b866caf298edd96ccea08874642386491cd599d))
+* **Yuka - Hide Search tab:** remove locked search from bottom bar ([ef5cf7a](https://github.com/hxreborn/morphe-patches/commit/ef5cf7a7986f44ede33eb12ae0f94941732ea5e6))
+* **ZArchiver - Archive image thumbnails:** show previews in file list ([527dc0c](https://github.com/hxreborn/morphe-patches/commit/527dc0ce8aca13a272529bb3716dbbb7adbaf6c1))
+* **ZArchiver - Edit files in archives:** save changes inside archives ([e6a3a60](https://github.com/hxreborn/morphe-patches/commit/e6a3a6047cea3f8980d45411b306e20b0c172acd))
+* **ZArchiver - Saved passwords:** fill archive password prompts ([24a9380](https://github.com/hxreborn/morphe-patches/commit/24a9380834b88bb85ba398a5c9cbe27a6f046842))
+* **ZArchiver - Unlock themes:** offer six options under Interface ([4550803](https://github.com/hxreborn/morphe-patches/commit/4550803244db7ce60adebee845bb50a265af08b1))
 
-* **Gboard:** **Web Clipboard**：新增雙向圖片與截圖同步。在手機複製圖片或截圖後會即時顯示在網頁端；在電腦網頁點選、貼上或拖曳單張／多張圖片，也會直接同步到手機系統剪貼簿與 Gboard 剪貼簿歷史中。
-* **Gboard:** **Web Clipboard**：優化圖片檢視與介面體驗，包含全新全螢幕圖片預覽燈箱（固定左右全高切換區域、底部所有圖片縮圖預覽列、右上角複製／下載／關閉按鈕）、精簡的待傳圖片列、透明圖片棋盤格底紋，以及更俐落的空狀態與同日時間戳顯示。
-* **Gboard:** `Patches` 設定頁新增 11 種語言：簡體中文、日文、韓文、西班牙文、巴西葡萄牙文、俄文、德文、法文、越南文、印尼文與土耳其文。「語言」設為「跟隨系統」時，若系統語言在支援範圍內，設定頁會自動切換；也可以手動選擇任一種內建語言（共 13 種）。尚未翻譯的文字會以英文顯示。
-* **Gboard:** `Toolbar Editing Buttons` Patch 新增 9 個按鈕：向前刪除、純文字貼上、行首、行尾、Tab，以及上、下、左、右方向鍵。
-* **Gboard:** `Toolbar Editing Buttons`、`Floating Web Search` 與 `Incognito Mode Toggle` 的工具列按鈕文字改為跟隨 `Patches` 設定頁的「語言」設定，不再固定顯示英文。
-* **Gboard:** **剪貼簿增強**新增「編輯時新增全選按鈕」，預設關閉。可在 **Patches → 剪貼簿 → 一般**查看說明、預覽並開啟。啟用後，「全選」會出現在編輯工具列最左側，預設包含釘選項目。開啟「排除釘選」後，全選只勾選未釘選項目，再按 Gboard 原生刪除鍵即可批次刪除。
-* **Gboard:** **備份與還原**新增 Gboard 個人化資料匯出，可以自選要存進 ZIP 檔的項目：記憶字詞、個人字典、封鎖的建議字詞、表情符號與 GIF 紀錄、自訂主題、已固定的剪貼簿項目和 Gboard 設定。
-* **Gboard:** 「匯入 Gboard 資料」可以自選要還原的項目。匯入前會列出所有會被覆蓋的內容，完成後逐項顯示結果，並提供「重新啟動 Gboard」。較新版本 Gboard 的備份無法匯入。剪貼簿只包含已固定的項目；還原 Gboard 設定後，Gboard 可能會要求聯絡人權限。
+### Updated App Support
 
-### 🐛 修復
-
-* **Gboard:** **Web Clipboard**：修復清空對話後重新整理網頁時舊訊息會再次出現的問題，現在清空時會一併重置手機端快取的最新剪貼簿狀態。
-* **Gboard:** **Web Clipboard**：修復手機與電腦系統時間存在誤差時訊息排序錯亂的問題，改以電腦端實際收到訊息的時間排序。
-* **Gboard:** **Web Clipboard**：修復圖片預覽燈箱頂部按鈕裁切、拖曳上傳外框四角邊線被遮擋，以及連續上傳多張圖片時 Gboard 剪貼簿歷史項目可能互相覆蓋的問題。
-* **Gboard:** **Toolbar Editing Buttons**：重新繪製「全選」圖示，不再與 Gboard 內建的「調整大小」按鈕完全相同。
-* **Gboard:** **磨砂玻璃**：修復開啟鍵盤時背景可能只剩透明、沒有顯示模糊效果，必須按下任意按鍵後才恢復的問題；現在建立新的模糊表面後會自動補排一次下一幀重繪。
+* **Notein:** add support for `v2.1.56.0` ([763deb2](https://github.com/hxreborn/morphe-patches/commit/763deb2a312155da5fb556e7452d3634f8dd626d)), closes [#951](https://github.com/hxreborn/morphe-patches/issues/951)
+* **TunnelDOOM VPN:** add support for `4.3.5` ([1e47ab1](https://github.com/hxreborn/morphe-patches/commit/1e47ab16542177cb9c78246587b77d6e003b44c8)), closes [#1026](https://github.com/hxreborn/morphe-patches/issues/1026)
 
 </details>
 
-CLI: MorpheApp/morphe-cli/morphe-desktop-2.4.0-all.jar  
-Patches: sashade8-ship-it/dual-vot-patches/patches-2.4.0-dualvot.8.5.4.mpp  
-[Changelog](https://github.com/sashade8-ship-it/dual-vot-patches/releases/tag/v2.4.0-dualvot.8.5.4)
-
-<details><summary>Patches release notes (v2.4.0-dualvot.8.5.4)</summary>
-
-## Dual VoT Patches 2.4.0-dualvot.8.5.4
-
-Stable automated update based on Morphe Patches 2.4.0.
-
-### Included
-
-- Google/other and Yandex voice-over translation in one patch bundle.
-- Separate player controls with mutual exclusion.
-- Dual VoT volume controls and automatic reset when the video changes.
-- Requests for previously untranslated Yandex videos.
-
-### Validation
-
-- Android patch bundle compiled successfully.
-- Both translation patches are present in generated metadata.
-- Required Dual VoT integration sources and bundle manifest were verified.
-
-This release was produced automatically. Runtime regressions that cannot be
-detected by compilation should be reported in this repository.
-
-</details>  
+CLI: MorpheApp/morphe-cli/morphe-desktop-2.4.0-all.jar    
 
 Skipped:  
+Gboard: jasonwu1994/Gboard-patches/patches-4.5.0.mpp
 GooglePhotos: RookieEnough/De-Vanced/patches-1.6.4.mpp
-ProtonVPN: hxreborn/morphe-patches/patches-1.88.0.mpp  
+YouTube: sashade8-ship-it/dual-vot-patches/patches-2.4.0-dualvot.8.5.4.mpp  
 
 Без изменений, перенесено из релиза 31:  
 - gboard-lite-kveld-v18.6.3.1002251336-lite_release-arm64-v8a.apk  
+- gboard-wu-v18.5.4.993608717-release-arm64-v8a.apk  
 - googlephotos-devanced-module-v7.92.0.977185651-arm64-v8a.zip  
 - googlephotos-devanced-v7.92.0.977185651-arm64-v8a.apk  
-- proton-vpn-hxreborn-v5.21.9.0-arm64-v8a.apk  
+- youtube-dualvot-module-v21.30.216-arm64-v8a.zip  
+- youtube-dualvot-v21.30.216-arm64-v8a.apk  
